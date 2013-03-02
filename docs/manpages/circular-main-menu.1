@@ -1,29 +1,64 @@
-.TH "circular-main-menu" "1" "2011-11-27" "inne" "circular-application-menu"
+.TH "circular-main-menu" "1" "2013-02-25" "inne" "circular-application-menu"
 .SH NAME
 circular-main-menu - circular-application-menu (C-A-M) representation for the GNOME desktop
 .SH SYNOPSIS
-circular-main-menu OPTION...
+circular-main-menu [OPTION ...]
 .SH DESCRIPTION
-This is a circular-application-menu (C-A-M) prototype mirroring the 
-same structure as the existing application menu for the GNOME 
-desktop. This was originally just a paper prototype by Cole Anstey.
+This is a circular-application-menu (C-A-M) mirroring the same structure as the existing application menu for the GNOME
+desktop.
 .SH OPTIONS
-.SS -?, --help
-Show help options 
-.SS -h, --hide-preview
-Hides the menu preview displayed when the mouse is over a menu. 
-.SS -w, --warp-mouse-off
-Stops the mouse from warping to the centre of the screen whenever a 
-menu is shown.
-.SS -g, --glyph-size=S
-The size of the glyphs 1=small 2=medium 3=large (default).
-.SS -b, --blur-off
+.SS -h, --help
+Shows help options.
+.SS --hide-preview
+Hides the menu preview displayed when the mouse is over a menu.
+.SS --hide-tooltip
+Hides the tooltip displayed when the mouse is over a menuitem.
+.SS --warp-pointer-off
+Stops the pointer e.g. the mouse from warping to the centre of the screen whenever a menu is shown.
+.SS -g, --glyph-size=SIZE
+The size of the glyphs: 1=small, 2=medium or 3=large (default).
+.BR
+Example: \-g="1", set the size of glyphs to small.
+.SS --blur-off
 Stops the blur from underneath the menu.
-.SS -e, --emblem=E
+.SS --no-fullscreen
+Maximize the window instead of place in the fullscreen state.
+.BR
+Usually the menu is a window in the fullscreen state, but maximized looks better with the GNOME-Shell.
+.SS -e, --emblem=NORMAL:PRELIGHT
 Specifies the emblems (colon separated) to use for the root menu.
 .BR
-Example: \-\-emblem="./emblem-\fBnormal\fR.png:./emblem-\fBprelight\fR.png\fR"
+Example: \-\-emblem="./emblem-\fBnormal\fR.png:./emblem-\fBprelight\fR.png\fR".
 .BR
-(You can find some emblems in \fI/usr/share/circular-application-menu/pixmaps\fR.)
-.SS -t, --render-tabbed-only
+Usually you can find some emblems in \fI/usr/share/circular-application-menu/pixmaps\fR.
+.SS -c, --color=NORMAL[:PRELIGHT[:TEXT]]
+Specifies the colors (colon separated) to use for segments and text.
+.BR
+The color can be either one of:
+.RS
+.IP
+A standard name (Taken from the X11 rgb.txt file).
+.IP
+A hex value in the form '#rgb' '#rrggbb' '#rrrgggbbb' or '#rrrrggggbbbb'.
+.IP
+A RGB color in the form 'rgb(r,g,b)'. (In this case the color will have full opacity. But opacity is ignored by C-A-M.)
+.IP
+A RGBA color in the form 'rgba(r,g,b,a)'. (But opacity respectively alpha is ignored by C-A-M.)
+.RE
+Example: \-\-color="rgba(215,7,81)" stands for a Debian red singel color menu, \-\-color="#0f0:yellow" for "normal:prelight" and so on.
+.BR
+Usually you can some predefined RGB colors in the X11 rgb.txt file \fI/etc/X11/rgb.txt\fR.
+.SS --render-tabbed-only
 Only shows the currently tabbed menu.
+.SS --render-reflection
+Stops the reflection from being rendered.
+.SS --menu-file=MENU_FILE
+Menu file.
+.SS --include-excluded
+Include excluded menu entries.
+.SS --include-nodisplay
+Include NoDisplay=true menu entries.
+.SH HISTORY
+The circular-application-menu was originally just a paper prototype written by Cole Anstey.
+
+
