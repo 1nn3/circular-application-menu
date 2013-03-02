@@ -158,6 +158,9 @@ main (int argc, char **argv)
     screen = gdk_screen_get_default ();
 
     window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+    /* Close the window when it lose the focus. */
+    gtk_widget_set_events (window, GDK_FOCUS_CHANGE_MASK);
+    g_signal_connect (G_OBJECT(window),"focus-out-event", G_CALLBACK (gtk_main_quit), NULL);
 
     /* Assign an alpha colormap to the window. */
     screen = gtk_widget_get_screen (GTK_WIDGET (window)); // screen = gdk_screen_get_default ();
