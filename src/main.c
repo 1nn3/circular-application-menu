@@ -75,7 +75,7 @@ main (int argc, char **argv)
     GMenuTreeDirectory* root;
     /* Default values. */
     gboolean hide_preview = FALSE;
-    gboolean warp_mouse = FALSE;
+    gboolean warp_pointer_off = FALSE;
     gboolean glyph_size = 3;
     gboolean blur_off = FALSE;
     gchar* emblem = "/usr/share/circular-application-menu/pixmaps/default-emblem-normal.png:/usr/share/circular-application-menu/pixmaps/default-emblem-prelight.png";
@@ -85,7 +85,7 @@ main (int argc, char **argv)
     GOptionEntry options[] =
     {
         { "hide-preview", 'h', 0, G_OPTION_ARG_NONE, &hide_preview, "Hides the menu preview displayed when the mouse is over a menu.", NULL },
-        { "warp-mouse-off", 'w', 0, G_OPTION_ARG_NONE, &warp_mouse, "Stops the mouse from warping to the centre of the screen whenever a menu is shown.", NULL },
+        { "warp-pointer-off", 'w', 0, G_OPTION_ARG_NONE, &warp_pointer_off, "Stops the pointer e.g. the mouse from warping to the centre of the screen whenever a menu is shown.", NULL },
         { "glyph-size", 'g', 0, G_OPTION_ARG_INT, &glyph_size, "The size of the glyphs [S: 1=small 2=medium 3=large (default)]. ", "S"  },
         { "blur-off", 'b', 0, G_OPTION_ARG_NONE, &blur_off, "Stops the blur from underneath the menu.", NULL },
         { "emblem", 'e', 0, G_OPTION_ARG_STRING, &emblem, "Specifies the (colon separated) emblems to use for the root menu [E: ./pixmaps/emblem-normal.png:./pixmaps/emblem-prelight.png].", NULL },
@@ -150,7 +150,7 @@ main (int argc, char **argv)
     circular_application_menu = ca_circular_application_menu_new (
         gtk_widget_get_window (GTK_WIDGET (window)),
         hide_preview,
-        warp_mouse,
+        warp_pointer_off,
         glyph_size,
         emblem,
         render_reflection,

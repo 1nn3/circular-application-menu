@@ -77,7 +77,7 @@ static void _ca_circular_applications_menu_update_highlight(CaCircularApplicatio
 static gint _ca_circular_applications_menu_get_centre_iconsize(CaCircularApplicationMenu* circular_application_menu, CaFileLeaf* fileleaf);
 static void _ca_circular_applications_menu_update_emblem(CaCircularApplicationMenu* circular_application_menu, gchar* emblems);
 static void _ca_circular_application_menu_render_reflection(CaCircularApplicationMenu* circular_application_menu, cairo_t* cr);
-
+static void _ca_circular_application_menu_centre_pointer (CaCircularApplicationMenu* circular_application_menu);
 typedef struct _CaCircularApplicationMenuPrivate CaCircularApplicationMenuPrivate;
 
 struct _CaCircularApplicationMenuPrivate
@@ -96,7 +96,7 @@ struct _CaCircularApplicationMenuPrivate
 
     /*< Options >*/
     gboolean hide_preview;
-    gboolean xwarp_mouse_pointer;
+    gboolean warp_pointer_off;
     gboolean render_reflection_off;
     gint glyph_size;
     GdkPixbuf* emblem_normal;
@@ -201,7 +201,7 @@ enum
     PROP_WIDTH,
     PROP_HEIGHT,
     PROP_HIDE_PREVIEW,
-    PROP_WARP_MOUSE,
+    PROP_WARP_POINTER_OFF,
     PROP_GLYPH_SIZE,
     PROP_EMBLEM,
     PROP_RENDER_REFLECTION,
@@ -219,7 +219,7 @@ static CaFileLeaf* g_disassociated_fileleaf = NULL;
 /**
  * ca_circular_application_menu_new:
  * @hide_preview: A boolean that specifies whether a submenu preview should be displayed.
- * @warp_mouse: A boolean that specifies whether the mouse should be 'warped' to the screen centre whenever a submenu is displayed.
+ * @warp_pointer_off: A boolean that specifies whether the mouse should not be 'warped' to the screen centre whenever a submenu is displayed.
  * @glyph_size: An integer that specifes the default glyph size.
  * @emblem: A gchar pointer to the root menu emblem to use.
  * @render_reflection: A boolean that specifies whether the reflection should be rendered.
@@ -233,7 +233,7 @@ GtkWidget *
 ca_circular_application_menu_new (
 	GdkWindow *window,
 	gboolean hide_preview,
-	gboolean warp_mouse,
+	gboolean warp_pointer_off,
 	gint glyph_size,
 	gchar* emblem,
 	gboolean render_reflection,
@@ -250,7 +250,7 @@ ca_circular_application_menu_new (
         "width", rectangle.width, /*gdk_screen_width(),*/
         "height", rectangle.height, /*gdk_screen_height(),*/
         "hide-preview", hide_preview,
-        "warp-mouse", warp_mouse,
+        "warp-pointer-off", warp_pointer_off,
         "glyph-size", glyph_size,
         "emblem", emblem,
         "render-reflection", render_reflection,
@@ -281,21 +281,47 @@ ca_circular_application_menu(
 
     fileleaf = ca_circular_application_menu_show_leaf(circular_application_menu, menutreedirectory, ROOT_LEAF, NULL, FALSE);
 
-    /* Move the mouse pointer to the centre of the screen. */
-    if (FALSE == private->xwarp_mouse_pointer)
-    {
-        /* Move that pointer! */
-        gdk_display_warp_pointer (
-            gtk_widget_get_display (GTK_WIDGET (circular_application_menu)),
-            gtk_widget_get_screen (GTK_WIDGET (circular_application_menu)),
-            private->view_width / 2,
-            private->view_height / 2);
-
-        /* Update the highlighted item at the given coordinates. */
-        _ca_circular_applications_menu_update_highlight(circular_application_menu, private->view_width / 2, private->view_height / 2);
-    }
+    /* Move the pointer to the centre of the screen. */
+    _ca_circular_application_menu_centre_pointer (
+        circular_application_menu);
 
     return fileleaf;
+}
+
+/**
+ * _ca_circular_applications_menu_centre_pointer:
+ * @circular_application_menu: A CaCircularApplicationMenu pointer to the circular-application-menu widget instance.
+ *
+ * Move the pointer to the centre of the screen.
+ **/
+
+static void
+_ca_circular_application_menu_centre_pointer (
+CaCircularApplicationMenu* circular_application_menu)
+{
+    CaCircularApplicationMenuPrivate* private;
+    private = CA_CIRCULAR_APPLICATION_MENU_GET_PRIVATE (circular_application_menu);
+
+    if (private->warp_pointer_off) {
+        /* The pointer shall not be moved. */
+       return;
+    }
+
+    /* Move that pointer! */
+    GdkDisplay* display = gtk_widget_get_display (GTK_WIDGET (circular_application_menu));
+    GdkScreen* screen = gtk_widget_get_screen (GTK_WIDGET (circular_application_menu));
+    GdkDeviceManager* device_manager = gdk_display_get_device_manager (display);
+	gdk_device_warp (
+        gdk_device_manager_get_client_pointer (device_manager),
+        screen,
+        private->view_width / 2,
+        private->view_height / 2);
+
+     /* Update the highlighted item at the given coordinates. */
+     _ca_circular_applications_menu_update_highlight (
+         circular_application_menu,
+         private->view_width / 2,
+         private->view_height / 2);
 }
 
 /**
@@ -440,9 +466,9 @@ _ca_circular_application_menu_constructor (
 
                 break;
             }
-            case PROP_WARP_MOUSE:
+            case PROP_WARP_POINTER_OFF:
             {
-                private->xwarp_mouse_pointer = g_value_get_boolean (construct_params[param].value);
+                private->warp_pointer_off = g_value_get_boolean (construct_params[param].value);
 
                 break;
             }
@@ -712,11 +738,11 @@ _ca_circular_application_menu_class_init (CaCircularApplicationMenuClass* klass)
 
     g_object_class_install_property (
         gobject_class,
-        PROP_WARP_MOUSE,
+        PROP_WARP_POINTER_OFF,
         g_param_spec_boolean (
-            "warp-mouse",
-            "Warp Mouse",
-            "Warp Mouse.",
+            "warp-pointer-off",
+            "Warp Pointer off",
+            "Warp Pointer off.",
             FALSE,
             G_PARAM_WRITABLE|G_PARAM_CONSTRUCT_ONLY));
 
@@ -1332,16 +1358,9 @@ _ca_circular_application_menu_button_release(GtkWidget* widget, GdkEventButton* 
                 gtk_main_iteration();
             }
 
-            /* Move the mouse pointer to the centre of the screen. */
-            if (FALSE == private->xwarp_mouse_pointer)
-            {
-                /* Move that pointer! */
-                gdk_display_warp_pointer (
-                    gtk_widget_get_display (GTK_WIDGET (circular_application_menu)),
-                    gtk_widget_get_screen (GTK_WIDGET (circular_application_menu)),
-                    private->view_width / 2,
-                    private->view_height / 2);
-            }
+            /* Move the pointer to the centre of the screen. */
+            _ca_circular_application_menu_centre_pointer (
+                circular_application_menu);
         }
         else if (fileitem->_type == GLYPH_FILE_MENU_CENTRE)
         {
@@ -1368,18 +1387,9 @@ _ca_circular_application_menu_button_release(GtkWidget* widget, GdkEventButton* 
                 gtk_main_iteration();
             }
 
-            /* Move the mouse pointer to the centre of the screen. */
-
-	
-            if (FALSE == private->xwarp_mouse_pointer)
-            {
-                /* Move that pointer! */
-                gdk_display_warp_pointer (
-                    gtk_widget_get_display (GTK_WIDGET (circular_application_menu)),
-                    gtk_widget_get_screen (GTK_WIDGET (circular_application_menu)),
-                    private->view_width / 2,
-                    private->view_height / 2);
-            }
+            /* Move the pointer to the centre of the screen. */
+            _ca_circular_application_menu_centre_pointer (
+                circular_application_menu);
         }
         else if (fileitem->_type == GLYPH_FILE)
         {
