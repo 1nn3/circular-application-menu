@@ -1,6 +1,58 @@
-My thanks go to the following people who have contributed...
+Fork of Circular-Application-Menu (C-A-M) by Steffen Rumberger
 
-azathothgr (compiz forum) 	- Highlighted a segfault when retrieving an icon via gmenu_tree_entry_get_icon() in ca_circular_application_menu_show_leaf().
-inspired.ex (code.google.com) 	- Reported a problem with a displayed message after querying gdk_display_supports_composite(), that stated compiz wasn't available when it was.
+A circular-application-menu (C-A-M) mirroring the same structure as the existing application menu for the GNOME desktop.
+
+It was originally just a paper prototype written by Cole Anstey. But his project is no longer maintained and no further contributions will be accepted by him. That's why i maintain a fork.
+
+Cole Anstey's project website: http://circular-application-menu.googlecode.com
+
+Other Implementations
+
+	* http://en.wikipedia.org/wiki/Pie_menu
+	* http://gnome-pie.simonschneegans.de
+
+REQUIREMENTS
+
+	* GNOME platform and a composited environment (composition-manager or a composition-window-manager i.e. Compiz, Metacity, Mutter etc.)
+	* GTK+ (GIMP Toolkit) Version 3.x
+	* libgnome-menu Version 3.x
+
+INSTALLATION
+
+	git clone http://github.com/1nn3/circular-application-menu.git circular-application-menu
+	cd circular-application-menu
+	make
+	./circular-main-menu # run it
+
+To build a package for Debian run:
+
+	apt-get install build-essential debhelper libgtk-3-dev libgnomevfs2-dev libgnome-menu-3-dev
+	dpkg-buildpackage -b -uc
+
+LICENSE AND COPYRIGHT
+
+Copyright (C) 2008 - 2013 Cole Anstey <cole.anstey@gmail.com>
+                          Steffen Rumberger <inne@sdfeu.org>
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of either: the GNU General Public License as published
+by the Free Software Foundation.
+
+See http://www.gnu.org/licenses/gpl.html for more information.
+
+CONTACT
+
+Your patches, help and feedback is greatly appreciated.
+
+Steffen Rumberger <inne@sdfeu.org>
+
+THANKS
+
+My thanks go to the following people who have contributed.
+
+	* Cole Anstey: Author of Circular-Application-Menu.
+	* azathothgr (compiz forum): Highlighted a segfault when retrieving an icon via gmenu_tree_entry_get_icon() in ca_circular_application_menu_show_leaf().
+	* inspired.ex (code.google.com): Reported a problem with a displayed message after querying gdk_display_supports_composite(), that stated compiz wasn't available when it was.
 
 If your names not included and you think it should be then please let me know.
+
