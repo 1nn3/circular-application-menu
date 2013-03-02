@@ -112,7 +112,8 @@ main (int argc, char **argv)
     gnome_vfs_init();
 
     /* Parse the arguments. */
-    optioncontext = g_option_context_new("- circular-application-menu.");
+    optioncontext = g_option_context_new(
+        "- circular-application-menu (C-A-M) representation for the GNOME desktop");
     g_option_context_add_main_entries(optioncontext, options, "circular_applications");
     g_option_context_parse(optioncontext, &argc, &argv, NULL);
 
