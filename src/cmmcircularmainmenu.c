@@ -96,6 +96,7 @@ struct _CaCircularApplicationMenuPrivate
 
     /*< Options >*/
     gboolean hide_preview;
+    gboolean hide_tooltip;
     gboolean warp_pointer_off;
     gboolean render_reflection_off;
     gint glyph_size;
@@ -201,6 +202,7 @@ enum
     PROP_WIDTH,
     PROP_HEIGHT,
     PROP_HIDE_PREVIEW,
+    PROP_HIDE_TOOLTIP,
     PROP_WARP_POINTER_OFF,
     PROP_GLYPH_SIZE,
     PROP_EMBLEM,
@@ -219,6 +221,7 @@ static CaFileLeaf* g_disassociated_fileleaf = NULL;
 /**
  * ca_circular_application_menu_new:
  * @hide_preview: A boolean that specifies whether a submenu preview should be displayed.
+ * @hide_tooltip: A boolean that specifies whether a tooltip should be displayed.
  * @warp_pointer_off: A boolean that specifies whether the mouse should not be 'warped' to the screen centre whenever a submenu is displayed.
  * @glyph_size: An integer that specifes the default glyph size.
  * @emblem: A gchar pointer to the root menu emblem to use.
@@ -233,6 +236,7 @@ GtkWidget *
 ca_circular_application_menu_new (
 	GdkWindow *window,
 	gboolean hide_preview,
+	gboolean hide_tooltip,
 	gboolean warp_pointer_off,
 	gint glyph_size,
 	gchar* emblem,
@@ -250,6 +254,7 @@ ca_circular_application_menu_new (
         "width", rectangle.width, /*gdk_screen_width(),*/
         "height", rectangle.height, /*gdk_screen_height(),*/
         "hide-preview", hide_preview,
+        "hide-tooltip", hide_tooltip,
         "warp-pointer-off", warp_pointer_off,
         "glyph-size", glyph_size,
         "emblem", emblem,
@@ -463,6 +468,12 @@ _ca_circular_application_menu_constructor (
             case PROP_HIDE_PREVIEW:
             {
                 private->hide_preview = g_value_get_boolean (construct_params[param].value);
+
+                break;
+            }
+            case PROP_HIDE_TOOLTIP:
+            {
+                private->hide_tooltip = g_value_get_boolean (construct_params[param].value);
 
                 break;
             }
@@ -721,6 +732,16 @@ _ca_circular_application_menu_class_init (CaCircularApplicationMenuClass* klass)
             "hide-preview",
             "Hide Preview",
             "Hide Preview.",
+            FALSE,
+            G_PARAM_WRITABLE|G_PARAM_CONSTRUCT_ONLY));
+
+   g_object_class_install_property (
+        gobject_class,
+        PROP_HIDE_TOOLTIP,
+        g_param_spec_boolean (
+            "hide-tooltip",
+            "Hide Tooltip",
+            "Hide Tooltip.",
             FALSE,
             G_PARAM_WRITABLE|G_PARAM_CONSTRUCT_ONLY));
 
@@ -2824,7 +2845,8 @@ _ca_circular_application_menu_render_centred_text(
 
     private = CA_CIRCULAR_APPLICATION_MENU_GET_PRIVATE(circular_application_menu);
 
-    if ((text == NULL) ||
+    if ((private->hide_tooltip == TRUE) ||
+        (text == NULL) ||
         (strlen(text) == 0))
         return;
 

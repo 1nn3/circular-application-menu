@@ -209,7 +209,7 @@ struct _CaFileLeaf
 };
 
 /* Construction */
-GtkWidget* ca_circular_application_menu_new (GdkWindow *window, gboolean hide_preview, gboolean warp_mouse, gint glyph_size, gchar* emblem, gboolean render_reflection, gboolean render_tabbed_only);
+GtkWidget* ca_circular_application_menu_new (GdkWindow *window, gboolean hide_preview, gboolean hide_tooltip, gboolean warp_mouse, gint glyph_size, gchar* emblem, gboolean render_reflection, gboolean render_tabbed_only);
 GType ca_circular_application_menu_get_type(void);
 
 /* Implementation */

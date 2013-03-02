@@ -86,10 +86,12 @@ main (int argc, char **argv)
     /*gboolean  monitor = FALSE;*/
     gboolean include_excluded = FALSE;
     gboolean include_nodisplay = FALSE;
+    gboolean hide_tooltip = FALSE;
 
     GOptionEntry options[] =
     {
         { "hide-preview", 'h', 0, G_OPTION_ARG_NONE, &hide_preview, "Hides the menu preview displayed when the mouse is over a menu.", NULL },
+        { "hide-tooltip", 's', 0, G_OPTION_ARG_NONE, &hide_tooltip, _("Hides the tooltip displayed when the mouse is over a menuitem."), NULL },
         { "warp-pointer-off", 'w', 0, G_OPTION_ARG_NONE, &warp_pointer_off, "Stops the pointer e.g. the mouse from warping to the centre of the screen whenever a menu is shown.", NULL },
         { "glyph-size", 'g', 0, G_OPTION_ARG_INT, &glyph_size, "The size of the glyphs [S: 1=small 2=medium 3=large (default)]. ", "S"  },
         { "blur-off", 'b', 0, G_OPTION_ARG_NONE, &blur_off, "Stops the blur from underneath the menu.", NULL },
@@ -171,6 +173,7 @@ main (int argc, char **argv)
     circular_application_menu = ca_circular_application_menu_new (
         gtk_widget_get_window (GTK_WIDGET (window)),
         hide_preview,
+        hide_tooltip,
         warp_pointer_off,
         glyph_size,
         emblem,
