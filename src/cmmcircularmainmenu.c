@@ -709,9 +709,9 @@ _ca_circular_application_menu_class_init (CaCircularApplicationMenuClass* klass)
             "glyph-size",
             "Glyph Size",
             "Glyph Size.",
-            0,
-            G_MAXINT,
-            1,
+            1, /* min */
+            3, /* max */
+            3, /* default/fallback */
             G_PARAM_WRITABLE|G_PARAM_CONSTRUCT_ONLY));
 
     g_object_class_install_property (

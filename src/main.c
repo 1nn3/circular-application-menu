@@ -77,7 +77,7 @@ main (int argc, char **argv)
     /* Default values. */
     gboolean hide_preview = FALSE;
     gboolean warp_pointer_off = FALSE;
-    gboolean glyph_size = 3;
+    gint glyph_size = 3;
     gboolean blur_off = FALSE;
     gchar* emblem = NULL;
     gboolean render_reflection = FALSE;
@@ -112,9 +112,7 @@ main (int argc, char **argv)
     g_option_context_add_main_entries(optioncontext, options, "circular_applications");
     g_option_context_parse(optioncontext, &argc, &argv, NULL);
 
-    if (!g_option_context_parse (optioncontext, &argc, &argv, &error) ||
-        (glyph_size < 1) ||
-        (glyph_size > 3))
+    if (!g_option_context_parse (optioncontext, &argc, &argv, &error))
     {
         g_print (_("Option parsing failed: %s\n"), error->message);
 
