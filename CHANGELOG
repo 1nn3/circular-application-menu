@@ -1,0 +1,18 @@
+r57:
+	* Added an option to colorable the menu.
+	  Option -c, --color specifies colors to colorable the menu.
+	* Added an option to hide the tooltip.
+	  Option --hide-tooltip hides the tooltip. For all those, who wants the menu minimalism.
+	  Fixed feature request issue 11.
+	* Added an option to just maximize the window instead of place in the fullscreen state.
+	  Option --no-fullscreen just maximize the window.
+	  Usually the menu is a window in the fullscreen state, but maximized looks better with the GNOME-Shell.
+	* Removed many short option names.
+	* Migrated to libgnome-menu version 3.
+	* Fixed an error where the menu is not correct displayed in multi-head envirements.
+	  Center menu on main screen in multi-head environments.
+	  Fixed issue 3.
+
+r56 and older:
+	* No changlog was written
+
