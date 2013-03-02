@@ -78,6 +78,8 @@ static gint _ca_circular_applications_menu_get_centre_iconsize(CaCircularApplica
 static void _ca_circular_applications_menu_update_emblem(CaCircularApplicationMenu* circular_application_menu, gchar* emblems);
 static void _ca_circular_application_menu_render_reflection(CaCircularApplicationMenu* circular_application_menu, cairo_t* cr);
 static void _ca_circular_application_menu_centre_pointer (CaCircularApplicationMenu* circular_application_menu);
+static void _ca_circular_applications_menu_update_color(CaCircularApplicationMenu* circular_application_menu, gchar* colors);
+
 typedef struct _CaCircularApplicationMenuPrivate CaCircularApplicationMenuPrivate;
 
 struct _CaCircularApplicationMenuPrivate
@@ -130,30 +132,27 @@ typedef struct _RGBA RGBA;
 
 struct _RGBA
 {
-    gdouble _r;
-    gdouble _g;
-    gdouble _b;
+    GdkRGBA color;
     gdouble _a_pen;
-    gdouble _a_fill;
     gdouble _line_width;
 };
 
 #define CRGB(x)                 (x / 255.0)
 
-/* Defines the colours etc.         Red        Green      Blue       Apen   Afill   lwidth   */
-//RGBA g_normal_segment_rgba      = { CRGB(205), CRGB(233), CRGB(241), 0.8,   0.8,    0.0 };
-//RGBA g_prelight_segment_rgba    = { CRGB(205), CRGB(233), CRGB(241), 1.0,   0.9,    0.0 };
-//RGBA g_outer_inner_rgba         = { CRGB(205), CRGB(233), CRGB(241), 1.0,   0.8,    1.0 };
+/* Defines the colours etc.         Red        Green      Blue       Apen   lwidth   */
+//RGBA g_normal_segment_rgba      = { {CRGB(205), CRGB(233), CRGB(241), 0}, 0.8,   0.8,    0.0 };
+//RGBA g_prelight_segment_rgba    = { {CRGB(205), CRGB(233), CRGB(241), 0}, 1.0,   0.9,    0.0 };
+//RGBA g_outer_inner_rgba         = { {CRGB(205), CRGB(233), CRGB(241), 0}, 1.0,   0.8,    1.0 };
 
-RGBA g_normal_segment_rgba      = { CRGB(0), CRGB(0), CRGB(0), 0.8,   0.8,    1.0 };
-RGBA g_prelight_segment_rgba    = { CRGB(0), CRGB(0), CRGB(0), 1.0,   0.9,    1.0 };
-RGBA g_outer_inner_rgba         = { CRGB(0), CRGB(0), CRGB(0), 1.0,   0.8,    1.0 };
+RGBA g_normal_segment_rgba      = { {CRGB(0), CRGB(0), CRGB(0),       0.8}, 0.8, 1.0 };
+RGBA g_prelight_segment_rgba    = { {CRGB(0), CRGB(0), CRGB(0),       0.9}, 1.0, 1.0 };
+RGBA g_outer_inner_rgba         = { {CRGB(0), CRGB(0), CRGB(0),       0.8}, 1.0, 1.0 };
 
-RGBA g_outer1_rgba              = { CRGB(0),   CRGB(0),   CRGB(0),   1.0,   0.0,    0.0 };  /* Aline + lwidth unused. */
-RGBA g_outer2_rgba              = { CRGB(255), CRGB(255), CRGB(255), 0.5,   0.0,    0.0 };  /* Aline + lwidth unused. */
+RGBA g_outer1_rgba              = { {CRGB(0),   CRGB(0),   CRGB(0),   0.0}, 1.0, 0.0 };  /* Aline + lwidth unused. */
+RGBA g_outer2_rgba              = { {CRGB(255), CRGB(255), CRGB(255), 0.0}, 0.5, 0.0 };  /* Aline + lwidth unused. */
 
-RGBA g_text_box_rgba            = { CRGB(0),   CRGB(0),   CRGB(0),   0.0,   0.8,    0.0 };
-RGBA g_text_rgba                = { CRGB(255), CRGB(255), CRGB(255), 0.0,   1.0,    0.0 };
+RGBA g_text_box_rgba            = { {CRGB(0),   CRGB(0),   CRGB(0),   0.8}, 0.0, 0.0 };
+RGBA g_text_rgba                = { {CRGB(255), CRGB(255), CRGB(255), 1.0}, 0.0, 0.0 };
 
 /* Constants. */
 #define FADE_TIMER_INTERVAL        		15		/* The interval used for fading the menus. */
@@ -208,6 +207,7 @@ enum
     PROP_EMBLEM,
     PROP_RENDER_REFLECTION,
     PROP_RENDER_TABBED_ONLY,
+    PROP_COLOR,
 };
 
 static CaFileLeaf* g_root_fileleaf = NULL;
@@ -241,7 +241,8 @@ ca_circular_application_menu_new (
 	gint glyph_size,
 	gchar* emblem,
 	gboolean render_reflection,
-	gboolean render_tabbed_only)
+	gboolean render_tabbed_only,
+	gchar* color)
 {
     GObject* object;
     GdkScreen *screen = gdk_screen_get_default ();
@@ -260,6 +261,7 @@ ca_circular_application_menu_new (
         "emblem", emblem,
         "render-reflection", render_reflection,
         "render-tabbed-only", render_tabbed_only,
+        "color", color,
         NULL);
 
     return GTK_WIDGET(object);
@@ -327,6 +329,67 @@ CaCircularApplicationMenu* circular_application_menu)
          circular_application_menu,
          private->view_width / 2,
          private->view_height / 2);
+}
+
+/**
+ * _ca_circular_applications_menu_update_color:
+ * @circular_application_menu: A CaCircularApplicationMenu pointer to the circular-application-menu widget instance.
+ * @colors: a GtkRGBA value that denotes the colors.
+ *
+ * Update the colors.
+ **/
+static void 
+_ca_circular_applications_menu_update_color(CaCircularApplicationMenu* circular_application_menu, gchar* colors)
+{
+    CaCircularApplicationMenuPrivate* private;
+
+    private = CA_CIRCULAR_APPLICATION_MENU_GET_PRIVATE(circular_application_menu);
+
+    /* Split the colors and create the associated GdkRGBA. */
+    if (colors != NULL)
+    {
+        GdkRGBA color;
+        gchar* result = NULL;;
+        char delims[] = ":";
+
+        /* Normal color. */
+        if ( (result = strtok((gchar*)colors, delims)) != NULL) {
+            if(gdk_rgba_parse (&color,result)) {
+                g_normal_segment_rgba.color = color;
+                g_prelight_segment_rgba.color = color;
+                g_outer_inner_rgba.color = color;
+                g_outer1_rgba.color = color;
+                //g_outer2_rgba.color = color;
+                g_text_box_rgba.color = color;
+                //g_text_rgba.color = color; /* invert */
+            } else {
+                g_message("Color for normal segments could not be loaded, is the value \"%s\" correct?", result);
+            }
+        }
+
+        /* Prelight color. */
+        if ( (result = strtok(NULL, delims)) != NULL) {
+            if (gdk_rgba_parse (&color,result)) {
+                g_prelight_segment_rgba.color = color;
+            } else {
+                g_message("Color for prelight segments could not be loaded, is the value \"%s\" correct?", result);
+            }
+        }
+
+        /* Text color. */
+        if ( (result = strtok(NULL, delims)) != NULL) {
+            if (gdk_rgba_parse (&color,result)) {
+                g_text_rgba.color = color;
+            } else {
+                g_message("Color for text could not be loaded, is the value \"%s\" correct?", result);
+            }
+        }
+        
+        /* set alpha values */
+        g_normal_segment_rgba.color.alpha = 0.8;
+        g_prelight_segment_rgba.color.alpha = 0.9;
+        g_outer1_rgba.color.alpha = 1.0;
+    }
 }
 
 /**
@@ -507,6 +570,14 @@ _ca_circular_application_menu_constructor (
             {
                 private->render_tabbed_only = g_value_get_boolean (construct_params[param].value);
 
+                break;
+            }
+            case PROP_COLOR:
+            {
+                /* Update the menu color. */
+                _ca_circular_applications_menu_update_color (
+                    CA_CIRCULAR_APPLICATION_MENU (object),
+                    (gchar*) g_value_get_string (construct_params[param].value));
                 break;
             }
         }
@@ -783,6 +854,16 @@ _ca_circular_application_menu_class_init (CaCircularApplicationMenuClass* klass)
             "Render Tabbed Only",
             "Render Tabbed Only.",
             FALSE,
+            G_PARAM_WRITABLE|G_PARAM_CONSTRUCT_ONLY));
+
+    g_object_class_install_property (
+        gobject_class,
+        PROP_COLOR,
+        g_param_spec_string (
+            "color",
+            "Color",
+            "Color.",
+            NULL, /* Assigning a default value does not appear to work? */
             G_PARAM_WRITABLE|G_PARAM_CONSTRUCT_ONLY));
 
     /* Install the widgets private struture. */
@@ -1932,7 +2013,12 @@ _ca_circular_application_menu_render_fileleaf(
         cairo_new_sub_path (cr);
 
         /* Render to the cairo context. */
-        cairo_set_source_rgba (cr, g_outer_inner_rgba._r, g_outer_inner_rgba._g, g_outer_inner_rgba._b, g_outer_inner_rgba._a_fill);
+        cairo_set_source_rgba (
+                               cr,
+                               g_outer_inner_rgba.color.red,
+                               g_outer_inner_rgba.color.green,
+                               g_outer_inner_rgba.color.blue,
+                               g_outer_inner_rgba.color.alpha);
         cairo_fill_preserve (cr);
 
         /* Render reflections. */
@@ -1947,13 +2033,23 @@ _ca_circular_application_menu_render_fileleaf(
         /* Outline with a lighter colour. */
         cairo_clip_preserve(cr);
         cairo_set_line_width (cr, g_outer_inner_rgba._line_width * 3 /*Overlap from edge*/);
-        cairo_set_source_rgba (cr, g_outer2_rgba._r, g_outer2_rgba._g, g_outer2_rgba._b, g_outer2_rgba._a_pen);
+        cairo_set_source_rgba (
+                               cr, 
+                               g_outer2_rgba.color.red,
+                               g_outer2_rgba.color.green,
+                               g_outer2_rgba.color.blue,
+                               g_outer2_rgba._a_pen);
         cairo_stroke_preserve (cr);
         cairo_reset_clip(cr);
 
         /* Outline with a darker colour. */
         cairo_set_line_width (cr, g_outer_inner_rgba._line_width);
-        cairo_set_source_rgba (cr, g_outer1_rgba._r, g_outer1_rgba._g, g_outer1_rgba._b, g_outer1_rgba._a_pen);
+        cairo_set_source_rgba (
+                               cr,
+                               g_outer1_rgba.color.red,
+                               g_outer1_rgba.color.green,
+                               g_outer1_rgba.color.blue,
+                               g_outer1_rgba._a_pen);
         cairo_stroke (cr);
 
         cairo_path_destroy(path);
@@ -1984,7 +2080,12 @@ _ca_circular_application_menu_render_fileleaf(
             DEGREE_2_RADIAN(360));
 
         /* Render to the cairo context. */
-        cairo_set_source_rgba (cr, g_outer_inner_rgba._r, g_outer_inner_rgba._g, g_outer_inner_rgba._b, g_outer_inner_rgba._a_fill);
+        cairo_set_source_rgba (
+                               cr,
+                               g_outer_inner_rgba.color.red,
+                               g_outer_inner_rgba.color.green,
+                               g_outer_inner_rgba.color.blue,
+                               g_outer_inner_rgba.color.alpha);
         cairo_fill_preserve (cr);
 
         /* Render reflections. */
@@ -1999,13 +2100,23 @@ _ca_circular_application_menu_render_fileleaf(
         /* Outline with a lighter colour. */
         cairo_clip_preserve(cr);
         cairo_set_line_width (cr, g_outer_inner_rgba._line_width * 3 /*Overlap from edge*/);
-        cairo_set_source_rgba (cr, g_outer2_rgba._r, g_outer2_rgba._g, g_outer2_rgba._b, g_outer2_rgba._a_pen);
+        cairo_set_source_rgba (
+                               cr, 
+                               g_outer2_rgba.color.red,
+                               g_outer2_rgba.color.green,
+                               g_outer2_rgba.color.blue,
+                               g_outer2_rgba._a_pen);
         cairo_stroke_preserve (cr);
         cairo_reset_clip(cr);
 
         /* Outline with a darker colour. */
         cairo_set_line_width (cr, g_outer_inner_rgba._line_width);
-        cairo_set_source_rgba (cr, g_outer1_rgba._r, g_outer1_rgba._g, g_outer1_rgba._b, g_outer1_rgba._a_pen);
+        cairo_set_source_rgba (
+                               cr,
+                               g_outer1_rgba.color.red,
+                               g_outer1_rgba.color.green,
+                               g_outer1_rgba.color.blue,
+                               g_outer1_rgba._a_pen);
         cairo_stroke (cr);
 
         cairo_path_destroy(path);
@@ -2215,11 +2326,11 @@ _ca_circular_application_menu_render_fileleaf(
 
         /* Render to the cairo context. */
         cairo_set_source_rgba (
-			cr,
-			g_outer_inner_rgba._r,
-			g_outer_inner_rgba._g,
-			g_outer_inner_rgba._b,
-			g_outer_inner_rgba._a_fill);
+            cr,
+            g_outer_inner_rgba.color.red,
+            g_outer_inner_rgba.color.green,
+            g_outer_inner_rgba.color.blue,
+            g_outer_inner_rgba.color.alpha);
         cairo_fill_preserve (cr);
 
         /* Render reflections. */
@@ -2234,13 +2345,23 @@ _ca_circular_application_menu_render_fileleaf(
         /* Outline with a lighter colour. */
         cairo_clip_preserve(cr);
         cairo_set_line_width (cr, g_outer_inner_rgba._line_width * 3 /*Overlap from edge*/);
-        cairo_set_source_rgba (cr, g_outer2_rgba._r, g_outer2_rgba._g, g_outer2_rgba._b, g_outer2_rgba._a_pen);
+        cairo_set_source_rgba (
+            cr,
+            g_outer2_rgba.color.red,
+            g_outer2_rgba.color.green,
+            g_outer2_rgba.color.blue,
+            g_outer2_rgba._a_pen);
         cairo_stroke_preserve (cr);
         cairo_reset_clip(cr);
 
         /* Outline with a darker colour. */
         cairo_set_line_width (cr, g_outer_inner_rgba._line_width);
-        cairo_set_source_rgba (cr, g_outer1_rgba._r, g_outer1_rgba._g, g_outer1_rgba._b, g_outer1_rgba._a_pen);
+        cairo_set_source_rgba (
+            cr,
+            g_outer1_rgba.color.red,
+            g_outer1_rgba.color.green,
+            g_outer1_rgba.color.blue,
+            g_outer1_rgba._a_pen);
         cairo_stroke (cr);
 
         cairo_path_destroy(path);
@@ -2268,11 +2389,11 @@ _ca_circular_application_menu_render_fileleaf(
     /* Render to the cairo context. */
     cairo_set_line_width (cr, g_outer_inner_rgba._line_width);
     cairo_set_source_rgba (
-		cr,
-		g_outer_inner_rgba._r,
-		g_outer_inner_rgba._g,
-		g_outer_inner_rgba._b,
-		g_outer_inner_rgba._a_fill);
+        cr,
+        g_outer_inner_rgba.color.red,
+        g_outer_inner_rgba.color.green,
+        g_outer_inner_rgba.color.blue,
+        g_outer_inner_rgba.color.alpha);
     cairo_fill_preserve (cr);
 
     /* Render reflections. */
@@ -2281,7 +2402,12 @@ _ca_circular_application_menu_render_fileleaf(
         _ca_circular_application_menu_render_reflection(circular_application_menu, cr);
     }
 
-    cairo_set_source_rgba (cr, g_outer_inner_rgba._r, g_outer_inner_rgba._g, g_outer_inner_rgba._b, g_outer_inner_rgba._a_pen);
+    cairo_set_source_rgba (
+        cr,
+        g_outer_inner_rgba.color.red,
+        g_outer_inner_rgba.color.green,
+        g_outer_inner_rgba.color.blue,
+        g_outer_inner_rgba.color.alpha);
     cairo_stroke (cr);
 
     /* Render the fileleaf central glyph. */
@@ -2386,11 +2512,11 @@ _ca_circular_application_menu_render_fileleaf(
             /* Render to the cairo context. */
             cairo_set_line_width (cr, g_prelight_segment_rgba._line_width);
             cairo_set_source_rgba (
-				cr,
-				g_prelight_segment_rgba._r,
-				g_prelight_segment_rgba._g,
-				g_prelight_segment_rgba._b,
-				g_prelight_segment_rgba._a_fill);
+                cr,
+                g_prelight_segment_rgba.color.red,
+                g_prelight_segment_rgba.color.green,
+                g_prelight_segment_rgba.color.blue,
+                g_prelight_segment_rgba.color.alpha);
             cairo_fill_preserve (cr);
 
             /* Render reflections. */
@@ -2400,11 +2526,11 @@ _ca_circular_application_menu_render_fileleaf(
             }
 
             cairo_set_source_rgba (
-				cr,
-				g_prelight_segment_rgba._r,
-				g_prelight_segment_rgba._g,
-				g_prelight_segment_rgba._b,
-				g_prelight_segment_rgba._a_pen);
+                cr,
+                g_prelight_segment_rgba.color.red,
+                g_prelight_segment_rgba.color.green,
+                g_prelight_segment_rgba.color.blue,
+                g_prelight_segment_rgba.color.alpha);
             cairo_stroke (cr);
         }
         else
@@ -2414,11 +2540,11 @@ _ca_circular_application_menu_render_fileleaf(
             /* Render to the cairo context. */
             cairo_set_line_width (cr, g_normal_segment_rgba._line_width);
             cairo_set_source_rgba (
-				cr,
-				g_normal_segment_rgba._r,
-				g_normal_segment_rgba._g,
-				g_normal_segment_rgba._b,
-				g_normal_segment_rgba._a_fill);
+                cr,
+                g_normal_segment_rgba.color.red,
+                g_normal_segment_rgba.color.green,
+                g_normal_segment_rgba.color.blue,
+                g_normal_segment_rgba.color.alpha);
             cairo_fill_preserve (cr);
 
             /* Render reflections. */
@@ -2428,11 +2554,11 @@ _ca_circular_application_menu_render_fileleaf(
             }
 
             cairo_set_source_rgba (
-				cr,
-				g_normal_segment_rgba._r,
-				g_normal_segment_rgba._g,
-				g_normal_segment_rgba._b,
-				g_normal_segment_rgba._a_pen);
+                cr,
+                g_normal_segment_rgba.color.red,
+                g_normal_segment_rgba.color.green,
+                g_normal_segment_rgba.color.blue,
+                g_normal_segment_rgba.color.alpha);
             cairo_stroke (cr);
         }
     }
@@ -2503,11 +2629,11 @@ _ca_circular_application_menu_render_fileleaf(
                         /* Render to the cairo context. */
                         cairo_set_line_width (cr, g_prelight_segment_rgba._line_width);
                         cairo_set_source_rgba (
-							cr,
-							g_prelight_segment_rgba._r,
-							g_prelight_segment_rgba._g,
-							g_prelight_segment_rgba._b,
-							g_prelight_segment_rgba._a_fill);
+                            cr,
+                            g_prelight_segment_rgba.color.red,
+                            g_prelight_segment_rgba.color.green,
+                            g_prelight_segment_rgba.color.blue,
+                            g_prelight_segment_rgba.color.alpha);
                         cairo_fill_preserve (cr);
 
                         /* Render reflections. */
@@ -2517,11 +2643,11 @@ _ca_circular_application_menu_render_fileleaf(
                         }
 
                         cairo_set_source_rgba (
-							cr,
-							g_prelight_segment_rgba._r,
-							g_prelight_segment_rgba._g,
-							g_prelight_segment_rgba._b,
-							g_prelight_segment_rgba._a_pen);
+                            cr,
+                            g_prelight_segment_rgba.color.red,
+                            g_prelight_segment_rgba.color.green,
+                            g_prelight_segment_rgba.color.blue,
+                            g_prelight_segment_rgba.color.alpha);
                         cairo_stroke (cr);
                     }
                     else
@@ -2531,11 +2657,11 @@ _ca_circular_application_menu_render_fileleaf(
                         /* Render to the cairo context. */
                         cairo_set_line_width (cr, g_normal_segment_rgba._line_width);
                         cairo_set_source_rgba (
-							cr,
-							g_normal_segment_rgba._r,
-							g_normal_segment_rgba._g,
-							g_normal_segment_rgba._b,
-							g_normal_segment_rgba._a_fill);
+                            cr,
+                            g_normal_segment_rgba.color.red,
+                            g_normal_segment_rgba.color.green,
+                            g_normal_segment_rgba.color.blue,
+                            g_normal_segment_rgba.color.alpha);
                         cairo_fill_preserve (cr);
 
                         /* Render reflections. */
@@ -2545,11 +2671,11 @@ _ca_circular_application_menu_render_fileleaf(
                         }
 
                         cairo_set_source_rgba (
-							cr,
-							g_normal_segment_rgba._r,
-							g_normal_segment_rgba._g,
-							g_normal_segment_rgba._b,
-							g_normal_segment_rgba._a_pen);
+                            cr,
+                            g_normal_segment_rgba.color.red,
+                            g_normal_segment_rgba.color.green,
+                            g_normal_segment_rgba.color.blue,
+                            g_normal_segment_rgba.color.alpha);
                         cairo_stroke (cr);
                     }
 
@@ -2728,7 +2854,12 @@ _ca_circular_application_menu_render_fileleaf(
 
                         /* Render to the cairo context. */
                         cairo_set_line_width (cr, g_prelight_segment_rgba._line_width);
-                        cairo_set_source_rgba (cr, g_prelight_segment_rgba._r, g_prelight_segment_rgba._g, g_prelight_segment_rgba._b, g_prelight_segment_rgba._a_fill);
+                        cairo_set_source_rgba (
+                            cr,
+                            g_prelight_segment_rgba.color.red,
+                            g_prelight_segment_rgba.color.green,
+                            g_prelight_segment_rgba.color.blue,
+                            g_prelight_segment_rgba.color.alpha);
                         cairo_fill_preserve (cr);
 
                         /* Render reflections. */
@@ -2737,7 +2868,12 @@ _ca_circular_application_menu_render_fileleaf(
                             _ca_circular_application_menu_render_reflection(circular_application_menu, cr);
                         }
 
-                        cairo_set_source_rgba (cr, g_prelight_segment_rgba._r, g_prelight_segment_rgba._g, g_prelight_segment_rgba._b, g_prelight_segment_rgba._a_pen);
+                        cairo_set_source_rgba (
+                            cr,
+                            g_prelight_segment_rgba.color.red,
+                            g_prelight_segment_rgba.color.green,
+                            g_prelight_segment_rgba.color.blue,
+                            g_prelight_segment_rgba.color.alpha);
                         cairo_stroke (cr);
                     }
                     else
@@ -2746,7 +2882,12 @@ _ca_circular_application_menu_render_fileleaf(
 
                         /* Render to the cairo context. */
                         cairo_set_line_width (cr, g_normal_segment_rgba._line_width);
-                        cairo_set_source_rgba (cr, g_normal_segment_rgba._r, g_normal_segment_rgba._g, g_normal_segment_rgba._b, g_normal_segment_rgba._a_fill);
+                        cairo_set_source_rgba (
+                            cr,
+                            g_normal_segment_rgba.color.red,
+                            g_normal_segment_rgba.color.green,
+                            g_normal_segment_rgba.color.blue,
+                            g_normal_segment_rgba.color.alpha);
                         cairo_fill_preserve (cr);
 
                         /* Render reflections. */
@@ -2755,7 +2896,12 @@ _ca_circular_application_menu_render_fileleaf(
                             _ca_circular_application_menu_render_reflection(circular_application_menu, cr);
                         }
 
-                        cairo_set_source_rgba (cr, g_normal_segment_rgba._r, g_normal_segment_rgba._g, g_normal_segment_rgba._b, g_normal_segment_rgba._a_pen);
+                        cairo_set_source_rgba (
+                            cr,
+                            g_normal_segment_rgba.color.red,
+                            g_normal_segment_rgba.color.green,
+                            g_normal_segment_rgba.color.blue,
+                            g_normal_segment_rgba.color.alpha);
                         cairo_stroke (cr);
                     }
 
@@ -2878,18 +3024,38 @@ _ca_circular_application_menu_render_centred_text(
         DEGREE_2_RADIAN(270.0),
         DEGREE_2_RADIAN(90.0));
 
-    cairo_set_source_rgba (cr, g_text_box_rgba._r, g_text_box_rgba._g, g_text_box_rgba._b, g_text_box_rgba._a_fill);
+    cairo_set_source_rgba (
+        cr,
+        g_text_box_rgba.color.red,
+        g_text_box_rgba.color.green,
+        g_text_box_rgba.color.blue,
+        g_text_box_rgba.color.alpha);
     cairo_fill_preserve (cr);
-    cairo_set_source_rgba (cr, g_text_box_rgba._r, g_text_box_rgba._g, g_text_box_rgba._b, g_text_box_rgba._a_pen);
+    cairo_set_source_rgba (
+        cr,
+        g_text_box_rgba.color.red,
+        g_text_box_rgba.color.green,
+        g_text_box_rgba.color.blue,
+        g_text_box_rgba.color.alpha);
     cairo_set_line_width (cr, g_text_box_rgba._line_width);
     cairo_stroke (cr);
 
     /* Render the text. */
     cairo_move_to (cr, x, y - (font_extents.descent / 2));
     cairo_text_path (cr, text);
-    cairo_set_source_rgba (cr, g_text_rgba._r, g_text_rgba._g, g_text_rgba._b, g_text_rgba._a_fill);
+    cairo_set_source_rgba (
+        cr,
+        g_text_rgba.color.red,
+        g_text_rgba.color.green,
+        g_text_rgba.color.blue,
+        g_text_rgba.color.alpha);
     cairo_fill_preserve (cr);
-    cairo_set_source_rgba (cr, g_text_rgba._r, g_text_rgba._g, g_text_rgba._b, g_text_rgba._a_pen);
+    cairo_set_source_rgba (
+        cr,
+        g_text_rgba.color.red,
+        g_text_rgba.color.green,
+        g_text_rgba.color.blue,
+        g_text_rgba.color.alpha);
     cairo_set_line_width (cr, g_text_rgba._line_width);
     cairo_stroke (cr);
 }

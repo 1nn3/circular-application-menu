@@ -87,9 +87,11 @@ main (int argc, char **argv)
     gboolean include_excluded = FALSE;
     gboolean include_nodisplay = FALSE;
     gboolean hide_tooltip = FALSE;
+    gchar* color = NULL;
 
     GOptionEntry options[] =
     {
+        { "color", 'c', 0, G_OPTION_ARG_STRING, &color, _("Specifies the colors (colon separated) to use for segments and text."), "NORMAL[:PRELIGHT[:TEXT]]" },
         { "hide-preview", 'h', 0, G_OPTION_ARG_NONE, &hide_preview, "Hides the menu preview displayed when the mouse is over a menu.", NULL },
         { "hide-tooltip", 's', 0, G_OPTION_ARG_NONE, &hide_tooltip, _("Hides the tooltip displayed when the mouse is over a menuitem."), NULL },
         { "warp-pointer-off", 'w', 0, G_OPTION_ARG_NONE, &warp_pointer_off, "Stops the pointer e.g. the mouse from warping to the centre of the screen whenever a menu is shown.", NULL },
@@ -178,7 +180,8 @@ main (int argc, char **argv)
         glyph_size,
         emblem,
         render_reflection,
-        render_tabbed_only);
+        render_tabbed_only,
+        color);
     gtk_container_add (GTK_CONTAINER (window), circular_application_menu);
 
     g_signal_connect (window, "destroy", G_CALLBACK (gtk_main_quit), NULL);
