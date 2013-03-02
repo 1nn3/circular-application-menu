@@ -88,22 +88,22 @@ main (int argc, char **argv)
     gboolean include_nodisplay = FALSE;
     gboolean hide_tooltip = FALSE;
     gchar* color = NULL;
+    gboolean fullscreen = FALSE;
 
     GOptionEntry options[] =
     {
         { "color", 'c', 0, G_OPTION_ARG_STRING, &color, _("Specifies the colors (colon separated) to use for segments and text."), "NORMAL[:PRELIGHT[:TEXT]]" },
-        { "hide-preview", 'h', 0, G_OPTION_ARG_NONE, &hide_preview, "Hides the menu preview displayed when the mouse is over a menu.", NULL },
-        { "hide-tooltip", 's', 0, G_OPTION_ARG_NONE, &hide_tooltip, _("Hides the tooltip displayed when the mouse is over a menuitem."), NULL },
-        { "warp-pointer-off", 'w', 0, G_OPTION_ARG_NONE, &warp_pointer_off, "Stops the pointer e.g. the mouse from warping to the centre of the screen whenever a menu is shown.", NULL },
-        { "glyph-size", 'g', 0, G_OPTION_ARG_INT, &glyph_size, "The size of the glyphs [S: 1=small 2=medium 3=large (default)]. ", "S"  },
-        { "blur-off", 'b', 0, G_OPTION_ARG_NONE, &blur_off, "Stops the blur from underneath the menu.", NULL },
+        { "hide-preview", '\0', 0, G_OPTION_ARG_NONE, &hide_preview, "Hides the menu preview displayed when the mouse is over a menu.", NULL },
+        { "hide-tooltip", '\0', 0, G_OPTION_ARG_NONE, &hide_tooltip, _("Hides the tooltip displayed when the mouse is over a menuitem."), NULL },
+        { "warp-pointer-off", '\0', 0, G_OPTION_ARG_NONE, &warp_pointer_off, "Stops the pointer e.g. the mouse from warping to the centre of the screen whenever a menu is shown.", NULL },
+        { "glyph-size", 'g', 0, G_OPTION_ARG_INT, &glyph_size, "The size of the glyphs [SIZE: 1=small, 2=medium or 3=large (default)]. ", "SIZE"  },
+        { "blur-off", '\0', 0, G_OPTION_ARG_NONE, &blur_off, "Stops the blur from underneath the menu.", NULL },
         { "emblem", 'e', 0, G_OPTION_ARG_STRING, &emblem, "Specifies the (colon separated) emblems to use for the root menu.", "NORMAL:PRELIGHT" },
-        { "render-reflection", 'r', 0, G_OPTION_ARG_NONE, &render_reflection, "Stops the reflection from being rendered.", NULL },
-        { "render-tabbed-only", 't', 0, G_OPTION_ARG_NONE, &render_tabbed_only, "Only renders the currently tabbed menu.", NULL },        
-        { "file", 'f', 0, G_OPTION_ARG_STRING, &menu_file, N_("Menu file."), N_("MENU_FILE") },
-        /*{ "monitor", 'm', 0, G_OPTION_ARG_NONE, &monitor, N_("Monitor for menu changes", NULL },*/
-        { "include-excluded", 'i', 0, G_OPTION_ARG_NONE, &include_excluded, N_("Include Excluded menu entries."), NULL },
-        { "include-nodisplay", 'n', 0, G_OPTION_ARG_NONE, &include_nodisplay, N_("Include NoDisplay=true menu entries."), NULL },
+        { "render-reflection", '\0', 0, G_OPTION_ARG_NONE, &render_reflection, "Stops the reflection from being rendered.", NULL },
+        { "render-tabbed-only", '\0', 0, G_OPTION_ARG_NONE, &render_tabbed_only, "Only renders the currently tabbed menu.", NULL },        
+        { "menu-file", '\0', 0, G_OPTION_ARG_STRING, &menu_file, N_("Menu file."), N_("MENU_FILE") },
+        { "include-excluded", '\0', 0, G_OPTION_ARG_NONE, &include_excluded, N_("Include excluded menu entries."), NULL },
+        { "include-nodisplay", '\0', 0, G_OPTION_ARG_NONE, &include_nodisplay, N_("Include NoDisplay=true menu entries."), NULL },
         { NULL }
     };
 
@@ -188,7 +188,6 @@ main (int argc, char **argv)
 
     /* Make the application full screen, without this it will be below any top edged panel. */
     gtk_window_fullscreen(GTK_WINDOW(window));
-
     /* Check whether blur is enabled. */
     if (FALSE == blur_off)
     {
