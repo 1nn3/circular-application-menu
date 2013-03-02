@@ -79,7 +79,7 @@ main (int argc, char **argv)
     gboolean warp_pointer_off = FALSE;
     gboolean glyph_size = 3;
     gboolean blur_off = FALSE;
-    gchar* emblem = "/usr/share/circular-application-menu/pixmaps/default-emblem-normal.png:/usr/share/circular-application-menu/pixmaps/default-emblem-prelight.png";
+    gchar* emblem = NULL;
     gboolean render_reflection = FALSE;
     gboolean render_tabbed_only = FALSE;
     gchar *menu_file = NULL;
@@ -93,7 +93,7 @@ main (int argc, char **argv)
         { "warp-pointer-off", 'w', 0, G_OPTION_ARG_NONE, &warp_pointer_off, "Stops the pointer e.g. the mouse from warping to the centre of the screen whenever a menu is shown.", NULL },
         { "glyph-size", 'g', 0, G_OPTION_ARG_INT, &glyph_size, "The size of the glyphs [S: 1=small 2=medium 3=large (default)]. ", "S"  },
         { "blur-off", 'b', 0, G_OPTION_ARG_NONE, &blur_off, "Stops the blur from underneath the menu.", NULL },
-        { "emblem", 'e', 0, G_OPTION_ARG_STRING, &emblem, "Specifies the (colon separated) emblems to use for the root menu [E: ./pixmaps/emblem-normal.png:./pixmaps/emblem-prelight.png].", NULL },
+        { "emblem", 'e', 0, G_OPTION_ARG_STRING, &emblem, "Specifies the (colon separated) emblems to use for the root menu.", "NORMAL:PRELIGHT" },
         { "render-reflection", 'r', 0, G_OPTION_ARG_NONE, &render_reflection, "Stops the reflection from being rendered.", NULL },
         { "render-tabbed-only", 't', 0, G_OPTION_ARG_NONE, &render_tabbed_only, "Only renders the currently tabbed menu.", NULL },        
         { "file", 'f', 0, G_OPTION_ARG_STRING, &menu_file, N_("Menu file."), N_("MENU_FILE") },

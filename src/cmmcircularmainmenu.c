@@ -480,22 +480,10 @@ _ca_circular_application_menu_constructor (
             }
             case PROP_EMBLEM:
             {
-                gchar* passed_emblem;
-                gchar* emblems;
-
-                passed_emblem = (gchar*)g_value_get_string (construct_params[param].value);
-                emblems = (gchar*)g_malloc0(sizeof(gchar) * 255);
-
-                if (passed_emblem != NULL)
-                {
-                    strcpy(emblems, passed_emblem);
-                }
-
                 /* Update the root menu emblem. */
-                _ca_circular_applications_menu_update_emblem(CA_CIRCULAR_APPLICATION_MENU(object), emblems);
-
-                g_free((gpointer)emblems);
-
+                _ca_circular_applications_menu_update_emblem (
+                    CA_CIRCULAR_APPLICATION_MENU (object),
+                    (gchar*) g_value_get_string (construct_params[param].value));
                 break;
             }
             case PROP_RENDER_REFLECTION:
