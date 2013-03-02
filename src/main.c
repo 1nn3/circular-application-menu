@@ -29,7 +29,7 @@
 #include <string.h>
 
 #define GMENU_I_KNOW_THIS_IS_UNSTABLE
-#include <gnome-menus/gmenu-tree.h>
+#include <gnome-menus-3.0/gmenu-tree.h>
 
 #include "cmmcircularmainmenu.h"
 
@@ -71,6 +71,7 @@ main (int argc, char **argv)
     GtkWidget* circular_application_menu;
     GOptionContext* optioncontext;
     GError* error = NULL;
+    GMenuTreeFlags flags;
     GMenuTree* tree;
     GMenuTreeDirectory* root;
     /* Default values. */
@@ -81,6 +82,10 @@ main (int argc, char **argv)
     gchar* emblem = "/usr/share/circular-application-menu/pixmaps/default-emblem-normal.png:/usr/share/circular-application-menu/pixmaps/default-emblem-prelight.png";
     gboolean render_reflection = FALSE;
     gboolean render_tabbed_only = FALSE;
+    gchar *menu_file = NULL;
+    /*gboolean  monitor = FALSE;*/
+    gboolean include_excluded = FALSE;
+    gboolean include_nodisplay = FALSE;
 
     GOptionEntry options[] =
     {
@@ -91,22 +96,16 @@ main (int argc, char **argv)
         { "emblem", 'e', 0, G_OPTION_ARG_STRING, &emblem, "Specifies the (colon separated) emblems to use for the root menu [E: ./pixmaps/emblem-normal.png:./pixmaps/emblem-prelight.png].", NULL },
         { "render-reflection", 'r', 0, G_OPTION_ARG_NONE, &render_reflection, "Stops the reflection from being rendered.", NULL },
         { "render-tabbed-only", 't', 0, G_OPTION_ARG_NONE, &render_tabbed_only, "Only renders the currently tabbed menu.", NULL },        
+        { "file", 'f', 0, G_OPTION_ARG_STRING, &menu_file, N_("Menu file."), N_("MENU_FILE") },
+        /*{ "monitor", 'm', 0, G_OPTION_ARG_NONE, &monitor, N_("Monitor for menu changes", NULL },*/
+        { "include-excluded", 'i', 0, G_OPTION_ARG_NONE, &include_excluded, N_("Include Excluded menu entries."), NULL },
+        { "include-nodisplay", 'n', 0, G_OPTION_ARG_NONE, &include_nodisplay, N_("Include NoDisplay=true menu entries."), NULL },
         { NULL }
     };
 
     /* Initialise. */
     gtk_init (&argc, &argv);
     gnome_vfs_init();
-
-    tree = gmenu_tree_lookup ("applications.menu", GMENU_TREE_FLAGS_NONE);
-    g_assert (tree != NULL);
-
-    root = gmenu_tree_get_root_directory (tree);
-
-    if (root == NULL)
-    {
-        g_warning (_("The menu tree is empty."));
-    }
 
     /* Parse the arguments. */
     optioncontext = g_option_context_new("- circular-application-menu.");
@@ -123,6 +122,30 @@ main (int argc, char **argv)
     }
 
     g_option_context_free(optioncontext);
+
+    flags = GMENU_TREE_FLAGS_NONE;
+    if (include_excluded)
+        flags |= GMENU_TREE_FLAGS_INCLUDE_EXCLUDED;
+    if (include_nodisplay)
+        flags |= GMENU_TREE_FLAGS_INCLUDE_NODISPLAY;
+    
+    tree = gmenu_tree_new (menu_file ? menu_file : "applications.menu", flags);
+    g_assert (tree != NULL);
+
+    if (!gmenu_tree_load_sync (tree, &error))
+    {
+        g_printerr ("Failed to load tree: %s\n", error->message);
+        return -1;
+    }
+
+    g_message ("Loaded menu from %s\n", gmenu_tree_get_canonical_menu_path (tree));
+
+    root = gmenu_tree_get_root_directory (tree);
+
+    if (root == NULL)
+    {
+        g_warning (_("The menu tree is empty."));
+    }
 
     if (FALSE == gdk_display_supports_composite(gdk_display_get_default()))
     {

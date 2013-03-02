@@ -910,9 +910,10 @@ _ca_circular_application_menu_draw (GtkWidget* widget, cairo_t* cr, gpointer dat
         const gchar* name;
         const gchar* comment;
 
-        name = NULL;
-        comment = NULL;
+        name = gmenu_tree_directory_get_name(g_current_fileitem->_menutreeitem);
+        comment = gmenu_tree_directory_get_comment(g_current_fileitem->_menutreeitem);
 
+/*
         if (g_current_type == GLYPH_FILE_MENU)
         {
             name = gmenu_tree_directory_get_name(GMENU_TREE_DIRECTORY(g_current_fileitem->_menutreeitem));
@@ -923,7 +924,7 @@ _ca_circular_application_menu_draw (GtkWidget* widget, cairo_t* cr, gpointer dat
             name = gmenu_tree_entry_get_name(GMENU_TREE_ENTRY(g_current_fileitem->_menutreeitem));
             comment = gmenu_tree_entry_get_comment(GMENU_TREE_ENTRY(g_current_fileitem->_menutreeitem));
         }
-
+*/
         /* Name. */
 
         /* Render the text to a cairo context. */
@@ -1198,7 +1199,7 @@ _ca_circular_application_menu_motion_notify(GtkWidget* widget, GdkEventMotion* e
                 g_assert(g_disassociated_fileleaf == NULL);
                 g_disassociated_fileleaf = _ca_circular_application_menu_show_fileitem(
                     circular_application_menu, 
-                    GMENU_TREE_DIRECTORY(g_current_fileitem->_menutreeitem),
+                    g_current_fileitem->_menutreeitem,
                     GLYPH_FILE_MENU_CENTRE,
                     g_current_fileitem,
                     TRUE);
@@ -1324,7 +1325,7 @@ _ca_circular_application_menu_button_release(GtkWidget* widget, GdkEventButton* 
 
             sub_fileleaf = _ca_circular_application_menu_show_fileitem(
                 circular_application_menu,
-                GMENU_TREE_DIRECTORY(fileitem->_menutreeitem),
+                fileitem->_menutreeitem,
                 GLYPH_FILE_MENU_CENTRE,
                 fileitem,
                 FALSE);
@@ -1399,7 +1400,7 @@ _ca_circular_application_menu_button_release(GtkWidget* widget, GdkEventButton* 
             GdkAppLaunchContext* context;
             const gchar* desktopfile;
 
-            desktopfile = gmenu_tree_entry_get_desktop_file_path(GMENU_TREE_ENTRY(fileitem->_menutreeitem));
+            desktopfile = gmenu_tree_directory_get_desktop_file_path(fileitem->_menutreeitem);
             g_assert(NULL != desktopfile);
 
 			desktopitem = g_desktop_app_info_new_from_filename (desktopfile);
@@ -3390,55 +3391,58 @@ ca_circular_application_menu_show_leaf(
 
     current_list = NULL;
 
-    /* Iterate all files. */
-    items = gmenu_tree_directory_get_contents(menutreedirectory);
-    tmp = items;
-
     /* Iterate all files in the source directory. */
-    while (tmp != NULL)
-    {
-        GMenuTreeItem* current_item;
-        GMenuTreeItem* resolved_item;
-        GMenuTreeItemType itemtype;
 
-        current_item = GMENU_TREE_ITEM(tmp->data);
-        g_assert(current_item != NULL);
+    GMenuTreeItemType itemtype;
+    GMenuTreeIter *iter = gmenu_tree_directory_iter (menutreedirectory);
+    while ((itemtype = gmenu_tree_iter_next(iter)) != GMENU_TREE_ITEM_INVALID) {
 
-        itemtype = gmenu_tree_item_get_type(current_item);
+        CaFileItem* current_fileitem;
+        current_fileitem = g_new(CaFileItem, 1);
 
-        resolved_item = NULL;
-
-        if (itemtype == GMENU_TREE_ITEM_ALIAS)
+        switch (itemtype)
         {
-            resolved_item = gmenu_tree_alias_get_item (GMENU_TREE_ALIAS (current_item));
-            itemtype = gmenu_tree_item_get_type (resolved_item);
-
-            if (itemtype != GMENU_TREE_ITEM_ENTRY)
+        case GMENU_TREE_ITEM_DIRECTORY:
+            current_fileitem->_type = GLYPH_FILE_MENU;
+            current_fileitem->_menutreeitem = gmenu_tree_iter_get_directory(iter);
+            break;
+        case GMENU_TREE_ITEM_ENTRY:
+            current_fileitem->_type = GLYPH_FILE;
+            current_fileitem->_menutreeitem = gmenu_tree_iter_get_entry(iter);
+            break;
+        case GMENU_TREE_ITEM_HEADER:
+        case GMENU_TREE_ITEM_SEPARATOR:
+            continue;
+        case GMENU_TREE_ITEM_ALIAS:
             {
-                resolved_item = NULL;
-            }
-        }
-        else
-        {
-            resolved_item = current_item;
+                GMenuTreeAlias* alias = gmenu_tree_iter_get_alias (iter);
+                switch (gmenu_tree_alias_get_aliased_item_type (alias))
+                {
+                case GMENU_TREE_ITEM_DIRECTORY:
+                    current_fileitem->_type = GLYPH_FILE_MENU;
+                    current_fileitem->_menutreeitem = gmenu_tree_alias_get_aliased_directory(
+                        alias);
+                    break;
+                case GMENU_TREE_ITEM_ENTRY:
+                    current_fileitem->_type = GLYPH_FILE;
+                    current_fileitem->_menutreeitem = gmenu_tree_alias_get_aliased_entry (
+                        alias);
+	            break;
+	        default:
+                    g_assert_not_reached ();
+                    continue;
+                }
+	    }
+	    break;
+        default:
+            g_assert_not_reached ();
+            continue;
         }
 
-        if (resolved_item == NULL)
-        {
-            gmenu_tree_item_unref (current_item);
-        }
-        else if ((itemtype == GMENU_TREE_ITEM_ENTRY) ||
-            (itemtype == GMENU_TREE_ITEM_DIRECTORY))
-        {
-            CaFileItem* current_fileitem;
-
-            /* Create a new fileitem. */
-            current_fileitem = g_new(CaFileItem, 1);
-            current_fileitem->_type = (itemtype == GMENU_TREE_ITEM_DIRECTORY) ? GLYPH_FILE_MENU : GLYPH_FILE;
-            current_fileitem->_menutreeitem = resolved_item;
-			current_fileitem->_icon = (current_fileitem->_menutreeitem != NULL) ?
-				gmenu_tree_entry_get_icon(GMENU_TREE_ENTRY(current_fileitem->_menutreeitem)) :
-				NULL;
+        /* Create a new fileitem. */
+        
+        current_fileitem->_icon = g_icon_to_string (
+        gmenu_tree_directory_get_icon(current_fileitem->_menutreeitem));
 
 			/* Retrieve a pixbuf associated with the given name. */
             current_fileitem->_pixbuf = _ca_circular_applications_menu_get_pixbuf_from_name(
@@ -3460,12 +3464,7 @@ ca_circular_application_menu_show_leaf(
 
             if (fileleaf->_fileitem_list == NULL)
                 fileleaf->_fileitem_list = current_list;
-        }
-
-        tmp = tmp->next;
     }
-
-    g_slist_free (items);
 
     /* Keep the refefence to the root fileleaf. */
     if (g_root_fileleaf == NULL)

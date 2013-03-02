@@ -14,7 +14,7 @@ CFLAGS+=-DGTK_DISABLE_SINGLE_INCLUDES
 CFLAGS+=-DGDK_DISABLE_DEPRECATED
 CFLAGS+=-DGSEAL_ENABLE
 
-LIBS=`pkg-config --libs gtk+-3.0 gnome-vfs-2.0` -lgnome-menu
+LIBS=`pkg-config --libs gtk+-3.0 gnome-vfs-2.0 libgnome-menu-3.0`
 
 IMAGES = \
 	pixmaps/close-menu-normal.svg \
