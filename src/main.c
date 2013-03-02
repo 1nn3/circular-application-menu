@@ -1,5 +1,6 @@
 /* circular-main-menu
- * Copyright (C) 2008 - Cole Anstey
+ * Copyright: 2008-2013 Cole Anstey <cole.anstey@gmail.com>
+ *                      Steffen Rumberger <inne@sdfeu.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,7 +17,7 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * See http://code.google.com/p/circular-application-menu/
+ * See http://github.com/1nn3/circular-application-menu
  */
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
