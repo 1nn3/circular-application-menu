@@ -47,3 +47,7 @@ rpm: dist
 
 tar:
 	tar -pczf $(distdir).tar.gz ./circular-main-menu
+
+deb:
+	dpkg-buildpackage -b -uc
+
