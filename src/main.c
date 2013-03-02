@@ -88,7 +88,7 @@ main (int argc, char **argv)
     gboolean include_nodisplay = FALSE;
     gboolean hide_tooltip = FALSE;
     gchar* color = NULL;
-    gboolean fullscreen = FALSE;
+    gboolean no_fullscreen = FALSE;
 
     GOptionEntry options[] =
     {
@@ -102,6 +102,7 @@ main (int argc, char **argv)
         { "render-reflection", '\0', 0, G_OPTION_ARG_NONE, &render_reflection, "Stops the reflection from being rendered.", NULL },
         { "render-tabbed-only", '\0', 0, G_OPTION_ARG_NONE, &render_tabbed_only, "Only renders the currently tabbed menu.", NULL },        
         { "menu-file", '\0', 0, G_OPTION_ARG_STRING, &menu_file, N_("Menu file."), N_("MENU_FILE") },
+        { "no-fullscreen", '\0', 0, G_OPTION_ARG_NONE, &no_fullscreen, "Maximize the window instead of place in the fullscreen state.", NULL },
         { "include-excluded", '\0', 0, G_OPTION_ARG_NONE, &include_excluded, N_("Include excluded menu entries."), NULL },
         { "include-nodisplay", '\0', 0, G_OPTION_ARG_NONE, &include_nodisplay, N_("Include NoDisplay=true menu entries."), NULL },
         { NULL }
@@ -188,7 +189,13 @@ main (int argc, char **argv)
     g_signal_connect (window, "destroy", G_CALLBACK (gtk_main_quit), NULL);
 
     /* Make the application full screen, without this it will be below any top edged panel. */
-    gtk_window_fullscreen(GTK_WINDOW(window));
+    if (!no_fullscreen) {
+        gtk_window_fullscreen(GTK_WINDOW(window));
+    } else {
+        gdk_window_set_decorations(gtk_widget_get_window (GTK_WIDGET (window)), 0);
+        gtk_window_maximize(GTK_WINDOW(window));
+    }
+
     /* Check whether blur is enabled. */
     if (FALSE == blur_off)
     {
