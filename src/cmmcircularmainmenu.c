@@ -1140,7 +1140,7 @@ _ca_circular_application_menu_motion_notify(GtkWidget* widget, GdkEventMotion* e
 
     if (event->is_hint)
         /* This function will cause another motion event arrive. */
-        gdk_window_get_pointer (event->window, &x, &y, &state);
+        gdk_window_get_device_position (event->window, event->device, &x, &y, &state);
     else
     {
         x = (gint)event->x;
