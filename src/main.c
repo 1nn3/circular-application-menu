@@ -148,6 +148,7 @@ main (int argc, char **argv)
 
     /* Constructs a new dockband widget. */
     circular_application_menu = ca_circular_application_menu_new (
+        gtk_widget_get_window (GTK_WIDGET (window)),
         hide_preview,
         warp_mouse,
         glyph_size,

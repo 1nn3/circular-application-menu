@@ -192,7 +192,8 @@ RGBA g_text_rgba                = { CRGB(255), CRGB(255), CRGB(255), 0.0,   1.0,
 
 /* Local data. */
 static GtkWidgetClass* parent_class = NULL;
-
+
+
 /* Properties. */
 enum
 {
@@ -230,6 +231,7 @@ static CaFileLeaf* g_disassociated_fileleaf = NULL;
  **/
 GtkWidget *
 ca_circular_application_menu_new (
+	GdkWindow *window,
 	gboolean hide_preview,
 	gboolean warp_mouse,
 	gint glyph_size,
@@ -238,11 +240,15 @@ ca_circular_application_menu_new (
 	gboolean render_tabbed_only)
 {
     GObject* object;
+    GdkScreen *screen = gdk_screen_get_default ();
+    gint monitor = gdk_screen_get_monitor_at_window (screen, window);
+    GdkRectangle rectangle;
+    gdk_screen_get_monitor_geometry (screen, monitor, &rectangle);
 
     object = g_object_new (
         ca_circular_application_menu_get_type(),
-        "width", gdk_screen_width(),
-        "height", gdk_screen_height(),
+        "width", rectangle.width, /*gdk_screen_width(),*/
+        "height", rectangle.height, /*gdk_screen_height(),*/
         "hide-preview", hide_preview,
         "warp-mouse", warp_mouse,
         "glyph-size", glyph_size,
@@ -842,7 +848,8 @@ _ca_circular_application_menu_draw (GtkWidget* widget, cairo_t* cr, gpointer dat
         private->view_width,
         private->view_height);
 
-    cairo_clip (cr);
+    cairo_clip (cr);
+
 	/* Render the circular-application-menu to a cairo context. */
     _ca_circular_application_menu_render (circular_application_menu, cr);
 
@@ -1489,7 +1496,8 @@ _ca_circular_application_menu_hittest(
 
         /* Walk from the last opened fileleaf to the root fileleaf so overlapped */
         /* fileitems take precedence. */
-        current_fileleaf = g_last_opened_fileleaf;
+        current_fileleaf = g_last_opened_fileleaf;
+
         /* Iterate the fileleafs. */
         do
         {
@@ -2967,7 +2975,8 @@ _ca_circular_application_menu_segment_contains_point(CaCircularApplicationMenu* 
     CaCircularApplicationMenuPrivate* private;
     CaFileLeaf* fileleaf;
     gdouble current_distance;
-    gboolean between_angle;
+    gboolean between_angle;
+
     private = CA_CIRCULAR_APPLICATION_MENU_GET_PRIVATE(circular_application_menu);
 
     between_angle = FALSE;
@@ -3042,7 +3051,8 @@ _ca_circular_application_menu_calculate_radius(CaCircularApplicationMenu* circul
     CaCircularApplicationMenuPrivate* private;
     gint fileitems_total;
     gdouble current_radius;
-    gint centre_iconsize;    
+    gint centre_iconsize;
+    
     private = CA_CIRCULAR_APPLICATION_MENU_GET_PRIVATE(circular_application_menu);
     
     /* Retrieve the centre iconsize. */
@@ -3372,7 +3382,8 @@ ca_circular_application_menu_show_leaf(
 
     /* Iterate all files. */
     items = gmenu_tree_directory_get_contents(menutreedirectory);
-    tmp = items;
+    tmp = items;
+
     /* Iterate all files in the source directory. */
     while (tmp != NULL)
     {
@@ -3725,7 +3736,11 @@ _ca_circular_applications_menu_get_pixbuf_from_name(const char* name, gint width
         screen = gdk_screen_get_default();
         theme = gtk_icon_theme_get_for_screen (screen);
     
-        icon_info = gtk_icon_theme_lookup_icon (		    theme,		    name,		    width,		    GTK_ICON_LOOKUP_USE_BUILTIN);   /* Previous setting was GTK_ICON_LOOKUP_NO_SVG. */
+        icon_info = gtk_icon_theme_lookup_icon (
+		    theme,
+		    name,
+		    width,
+		    GTK_ICON_LOOKUP_USE_BUILTIN);   /* Previous setting was GTK_ICON_LOOKUP_NO_SVG. */
 
         if (icon_info != NULL)
         {
