@@ -22,10 +22,7 @@
 #ifndef __CA_CIRCULAR_APPLICATION_MENU_H__
 #define __CA_CIRCULAR_APPLICATION_MENU_H__
 
-#include <gtk/gtk.h>
-
-#define GMENU_I_KNOW_THIS_IS_UNSTABLE
-#include <gnome-menus-3.0/gmenu-tree.h>
+#include "main.h"
 
 G_BEGIN_DECLS
 

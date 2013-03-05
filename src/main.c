@@ -19,20 +19,8 @@
  *
  * See http://github.com/1nn3/circular-application-menu
  */
-#include <gtk/gtk.h>
-#include <gdk/gdkx.h>
-#include <libgnomevfs/gnome-vfs.h>
 
-#include <X11/Xlib.h>
-#include <X11/Xatom.h>
-
-#include <glib/gi18n.h>
-#include <string.h>
-
-#define GMENU_I_KNOW_THIS_IS_UNSTABLE
-#include <gnome-menus-3.0/gmenu-tree.h>
-
-#include "cmmcircularmainmenu.h"
+#include "main.h"
 
 static CaFileLeaf* root_fileleaf = NULL;
 

@@ -21,21 +21,6 @@
  */
 #include "cmmcircularmainmenu.h"
 
-#include <gtk/gtk.h>
-#include <gdk/gdkkeysyms.h>
-#include <gdk/gdkx.h>
-#include <gio/gdesktopappinfo.h>
-
-#include <math.h>
-#include <string.h>
-#include <unistd.h>
-
-#include "../pixmaps/close-menu-prelight.h"
-#include "../pixmaps/close-menu-normal.h"
-#include "../pixmaps/open-sub-menu-prelight.h"
-#include "../pixmaps/open-sub-menu-normal.h"
-#include "../pixmaps/reflection.h"
-
 /* Base functions. */
 static void _ca_circular_application_menu_class_init (CaCircularApplicationMenuClass* klass);
 static void _ca_circular_application_menu_init (CaCircularApplicationMenu* widget);
