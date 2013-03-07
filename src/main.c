@@ -78,6 +78,31 @@ main (int argc, char **argv)
     gboolean hide_tooltip = FALSE;
     gchar* color = NULL;
     gboolean no_fullscreen = FALSE;
+    /* Key-value file parser — parses .ini-like config files */
+    GKeyFile * key_file = g_key_file_new ();
+    gchar key_file_path[30] = "";
+    g_sprintf(&key_file_path, "%s/.cmm\0", getenv("HOME"));
+    if ( g_key_file_load_from_file (key_file, &key_file_path, G_KEY_FILE_NONE, &error))
+    {
+        color = g_key_file_get_string(key_file, "DEFAULT", "color", NULL);
+        emblem = g_key_file_get_string(key_file, "DEFAULT", "emblem", NULL);
+        menu_file = g_key_file_get_string(key_file, "DEFAULT", "menu-file", NULL);
+        glyph_size = g_key_file_get_integer(key_file, "DEFAULT", "glyph-size", NULL);
+        no_fullscreen = g_key_file_get_boolean(key_file, "DEFAULT", "no-fullscreen", NULL);
+        include_excluded = g_key_file_get_boolean(key_file, "DEFAULT", "include-excluded", NULL);
+        include_nodisplay = g_key_file_get_boolean(key_file, "DEFAULT", "include-nodisplay", NULL);
+        hide_tooltip = g_key_file_get_boolean(key_file, "DEFAULT", "hide-tooltip", NULL);
+        hide_preview = g_key_file_get_boolean(key_file, "DEFAULT", "hide-preview", NULL);
+        warp_pointer_off = g_key_file_get_boolean(key_file, "DEFAULT", "warp-pointer-off", NULL);
+        blur_off = g_key_file_get_boolean(key_file, "DEFAULT", "blur-off", NULL);
+        render_reflection = g_key_file_get_boolean(key_file, "DEFAULT", "render-reflection", NULL);
+        render_tabbed_only = g_key_file_get_boolean(key_file, "DEFAULT", "render-tabbed-only", NULL);
+    }
+    else if (error)
+    {
+        g_message ("Failed to load %s: %s", key_file_path, error->message);
+        g_clear_error (&error); /* g_error_free */
+    }
 
     GOptionEntry options[] =
     {
