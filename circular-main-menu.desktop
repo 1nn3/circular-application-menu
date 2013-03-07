@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Circular-Main-Menu
+Comment=Circular-Application-Menu (C-A-M) for the GNOME desktop
+TryExec=cmm
+Exec=cmm
+Icon=circular-main-menu
+StartupNotify=true
+Terminal=false
+Type=Application
+Categories=GNOME;GTK;Utility;
