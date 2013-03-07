@@ -25,6 +25,7 @@
 #include <unistd.h>
 #include <string.h>
 
+#include "../config.h"
 #include "cmmcircularmainmenu.h"
 
 #include "../pixmaps/close-menu-prelight.h"
