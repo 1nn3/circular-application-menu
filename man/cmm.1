@@ -1,10 +1,10 @@
-.TH "cmm" "1" "2013-02-25" "inne" "circular-application-menu"
+.TH "cmm" "1" "2013-02-25" "inne" "Circular-Application-Menu"
 .SH NAME
-circular-main-menu - circular-application-menu (C-A-M) representation for the GNOME desktop.
+cmm - Circular-Main-Menu for the GNOME desktop
 .SH SYNOPSIS
-circular-main-menu [OPTION ...]
+cmm [OPTION ...]
 .SH DESCRIPTION
-This is a circular-application-menu (C-A-M) mirroring the same structure as the existing application menu for the GNOME desktop.
+This is a Circular-Application-Menu (C-A-M) mirroring the same structure as the existing application menu for the GNOME desktop.
 .SH OPTIONS
 .SS -h, --help
 Shows help options.
@@ -57,7 +57,17 @@ Menu file.
 Include excluded menu entries.
 .SS --include-nodisplay
 Include NoDisplay=true menu entries.
+.SH FILES
+.TP
+.I $HOME/.cmm
+INI-file stored default values.
+.BR
+Example:
+ # Settings for a Debian red singel color menu and excluded menu entries will displayed.
+ [DEFAULT]
+ 	color = rgb(215,7,81)
+ 	include-excluded = 1
 .SH HISTORY
-The circular-application-menu was originally just a paper prototype written by Cole Anstey.
+The Circular-Application-Menu was originally just a paper prototype written by Cole Anstey.
 
 
