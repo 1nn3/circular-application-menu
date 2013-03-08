@@ -1,6 +1,7 @@
-Depends and Build-Depends
-=========================
-For simplicity I set all required versions to the current available
-version in Debian Squeeze. So if you build it under a older release,
-just try to set the version to your current installed.
+Build-Depends
+=============
+For simplicity I set all required versions to the current available version in Debian.
 
+Binary
+======
+The Circular-Main-Menu binary is installed as cmm(1). The circular-main-menu(1) command is just a link to cmm(1).

@@ -1,1 +1,3 @@
-docs/manpages/circular-main-menu.1
+debian/circular-main-menu.1
+man/cmm.1
+
