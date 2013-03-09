@@ -20,17 +20,18 @@ INSTALLATION
 
 To install Circular-Application-Menu in your home directory run:
 
-	git clone http://github.com/1nn3/circular-application-menu.git circular-application-menu
-	cd circular-application-menu
+	git clone http://github.com/1nn3/circular-application-menu.git c-a-m
+	cd c-a-m
+
 	./autogen.sh # create configure script
 	./configure --prefix=$HOME/.local
 	make
 	make install
 	$HOME/.local/bin/cmm # run it
 
-To build a package for Debian GNU/Linux run:
+To build a package for Debian GNU/Linux run instead:
 
-	apt-get install build-essential debhelper autotools-dev libgtk-3-dev libgnomevfs2-dev libgnome-menu-3-dev
+	apt-get install build-essential debhelper autotools-dev autoconf automake libgtk-3-dev libgnomevfs2-dev libgnome-menu-3-dev
 	./autogen.sh # create configure script
 	dpkg-buildpackage -b -uc
 
@@ -45,9 +46,9 @@ CONTACT
 
 Your patches, help and feedback is greatly appreciated.
 
-Steffen Rumberger <inne@sdfeu.org>
+Contact me by email: Steffen Rumberger <inne@sdfeu.org>
 
 THANKS
 
-My thanks go to Cole Anstey founder and author of Circular-Application-Menu and all people who have contributed. See AUTHORS for more information.
+My thanks go to Cole Anstey, the project founder and author of Circular-Application-Menu and all people who have contributed. See AUTHORS for more information.
 
