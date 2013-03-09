@@ -349,7 +349,7 @@ _ca_circular_applications_menu_update_color(CaCircularApplicationMenu* circular_
                 g_text_box_rgba.color = color;
                 //g_text_rgba.color = color; /* invert */
             } else {
-                g_message("Color for normal segments could not be loaded, is the value \"%s\" correct?", result);
+                g_warning("Color for normal segments could not be loaded, is the value \"%s\" correct?", result);
             }
         }
 
@@ -358,7 +358,7 @@ _ca_circular_applications_menu_update_color(CaCircularApplicationMenu* circular_
             if (gdk_rgba_parse (&color,result)) {
                 g_prelight_segment_rgba.color = color;
             } else {
-                g_message("Color for prelight segments could not be loaded, is the value \"%s\" correct?", result);
+                g_warning("Color for prelight segments could not be loaded, is the value \"%s\" correct?", result);
             }
         }
 
@@ -367,7 +367,7 @@ _ca_circular_applications_menu_update_color(CaCircularApplicationMenu* circular_
             if (gdk_rgba_parse (&color,result)) {
                 g_text_rgba.color = color;
             } else {
-                g_message("Color for text could not be loaded, is the value \"%s\" correct?", result);
+                g_warning("Color for text could not be loaded, is the value \"%s\" correct?", result);
             }
         }
         
@@ -418,7 +418,7 @@ _ca_circular_applications_menu_update_emblem(CaCircularApplicationMenu* circular
         if ((private->emblem_normal == NULL) ||
             (private->emblem_prelight == NULL))
         {
-            g_message("The emblems could not be loaded, are the paths correct?");
+            g_warning("The emblems could not be loaded, are the paths correct?");
         }
     }
 }
@@ -605,7 +605,7 @@ _ca_circular_application_menu_constructor (
 
         if (!gtk_icon_size_lookup_for_settings (settings, icon_size, &private->icon_width, &private->icon_height))
         {
-            g_warning("Invalid icon size\n");
+            g_warning("Invalid icon size");
         }
 
         /* Work out the hypotenuse so a square image fits onto a tab. */
@@ -640,7 +640,6 @@ _ca_circular_application_menu_constructor (
 static void
 _ca_circular_application_menu_destroy(GtkWidget* object)
 {
-	g_print("_ca_circular_application_menu_destroy\n");
     CaCircularApplicationMenu* circular_application_menu;
     CaCircularApplicationMenuPrivate* private;
 
@@ -1486,7 +1485,7 @@ _ca_circular_application_menu_button_release(GtkWidget* widget, GdkEventButton* 
 
 			if (error)
 			{
-				g_warning ("Launching failed: %s\n", error->message);
+				g_warning ("Launching failed: %s", error->message);
 				g_clear_error (&error); /* g_error_free */
 			}
 

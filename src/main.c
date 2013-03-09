@@ -134,9 +134,8 @@ main (int argc, char **argv)
 
     if (!g_option_context_parse (optioncontext, &argc, &argv, &error))
     {
-        g_print (_("Option parsing failed: %s\n"), error->message);
-
-        return -1;
+        g_critical (_("Option parsing failed: %s"), error->message);
+        abort();
     }
 
     g_option_context_free(optioncontext);
@@ -152,11 +151,11 @@ main (int argc, char **argv)
 
     if (!gmenu_tree_load_sync (tree, &error))
     {
-        g_printerr ("Failed to load tree: %s\n", error->message);
-        return -1;
+        g_error ("Failed to load tree: %s", error->message); /* resulting in a call to abort() */
+        /* abort(); */
     }
 
-    g_message ("Loaded menu from %s\n", gmenu_tree_get_canonical_menu_path (tree));
+    g_message ("Loaded menu from %s", gmenu_tree_get_canonical_menu_path (tree));
 
     root = gmenu_tree_get_root_directory (tree);
 
@@ -167,7 +166,7 @@ main (int argc, char **argv)
 
     if (FALSE == gdk_display_supports_composite(gdk_display_get_default()))
     {
-        g_message(_("The circular-main-menu only displays correctly with composited desktops."));
+        g_warning(_("The circular-main-menu only displays correctly with composited desktops."));
     }
     screen = gdk_screen_get_default ();
 
