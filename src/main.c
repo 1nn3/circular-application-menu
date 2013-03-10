@@ -69,7 +69,7 @@ main (int argc, char **argv)
     gint glyph_size = 3;
     gboolean blur_off = FALSE;
     gchar* emblem = NULL;
-    gboolean render_reflection = FALSE;
+    gboolean render_reflection_off = FALSE;
     gboolean render_tabbed_only = FALSE;
     gchar *menu_file = NULL;
     /*gboolean  monitor = FALSE;*/
@@ -95,7 +95,7 @@ main (int argc, char **argv)
         hide_preview = g_key_file_get_boolean(key_file, "DEFAULT", "hide-preview", NULL);
         warp_pointer_off = g_key_file_get_boolean(key_file, "DEFAULT", "warp-pointer-off", NULL);
         blur_off = g_key_file_get_boolean(key_file, "DEFAULT", "blur-off", NULL);
-        render_reflection = g_key_file_get_boolean(key_file, "DEFAULT", "render-reflection", NULL);
+        render_reflection_off = g_key_file_get_boolean(key_file, "DEFAULT", "render-reflection-off", NULL);
         render_tabbed_only = g_key_file_get_boolean(key_file, "DEFAULT", "render-tabbed-only", NULL);
     }
     else if (error)
@@ -113,7 +113,7 @@ main (int argc, char **argv)
         { "glyph-size", 'g', 0, G_OPTION_ARG_INT, &glyph_size, "The size of the glyphs [SIZE: 1=small, 2=medium or 3=large (default)]. ", "SIZE"  },
         { "blur-off", '\0', 0, G_OPTION_ARG_NONE, &blur_off, "Stops the blur from underneath the menu.", NULL },
         { "emblem", 'e', 0, G_OPTION_ARG_STRING, &emblem, "Specifies the (colon separated) emblems to use for the root menu.", "NORMAL:PRELIGHT" },
-        { "render-reflection", '\0', 0, G_OPTION_ARG_NONE, &render_reflection, "Stops the reflection from being rendered.", NULL },
+        { "render-reflection-off", '\0', 0, G_OPTION_ARG_NONE, &render_reflection_off, "Stops the reflection from being rendered.", NULL },
         { "render-tabbed-only", '\0', 0, G_OPTION_ARG_NONE, &render_tabbed_only, "Only renders the currently tabbed menu.", NULL },        
         { "menu-file", '\0', 0, G_OPTION_ARG_STRING, &menu_file, N_("Menu file."), N_("MENU_FILE") },
         { "no-fullscreen", '\0', 0, G_OPTION_ARG_NONE, &no_fullscreen, "Maximize the window instead of place in the fullscreen state.", NULL },
@@ -197,7 +197,7 @@ main (int argc, char **argv)
         warp_pointer_off,
         glyph_size,
         emblem,
-        render_reflection,
+        render_reflection_off,
         render_tabbed_only,
         color);
     gtk_container_add (GTK_CONTAINER (window), circular_application_menu);

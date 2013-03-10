@@ -191,7 +191,7 @@ enum
     PROP_WARP_POINTER_OFF,
     PROP_GLYPH_SIZE,
     PROP_EMBLEM,
-    PROP_RENDER_REFLECTION,
+    PROP_RENDER_REFLECTION_OFF,
     PROP_RENDER_TABBED_ONLY,
     PROP_COLOR,
 };
@@ -211,7 +211,7 @@ static CaFileLeaf* g_disassociated_fileleaf = NULL;
  * @warp_pointer_off: A boolean that specifies whether the mouse should not be 'warped' to the screen centre whenever a submenu is displayed.
  * @glyph_size: An integer that specifes the default glyph size.
  * @emblem: A gchar pointer to the root menu emblem to use.
- * @render_reflection: A boolean that specifies whether the reflection should be rendered.
+ * @render_reflection_off: A boolean that specifies whether the reflection should not be rendered.
  * @render_tabbed_only: A boolean that specifies whether rendering only occurrs for the currently tabbed menu.
  *
  * Constructs a new dockband widget.
@@ -226,7 +226,7 @@ ca_circular_application_menu_new (
 	gboolean warp_pointer_off,
 	gint glyph_size,
 	gchar* emblem,
-	gboolean render_reflection,
+	gboolean render_reflection_off,
 	gboolean render_tabbed_only,
 	gchar* color)
 {
@@ -245,7 +245,7 @@ ca_circular_application_menu_new (
         "warp-pointer-off", warp_pointer_off,
         "glyph-size", glyph_size,
         "emblem", emblem,
-        "render-reflection", render_reflection,
+        "render-reflection-off", render_reflection_off,
         "render-tabbed-only", render_tabbed_only,
         "color", color,
         NULL);
@@ -546,7 +546,7 @@ _ca_circular_application_menu_constructor (
                     (gchar*) g_value_get_string (construct_params[param].value));
                 break;
             }
-            case PROP_RENDER_REFLECTION:
+            case PROP_RENDER_REFLECTION_OFF:
             {
                 private->render_reflection_off = g_value_get_boolean (construct_params[param].value);
 
@@ -823,11 +823,11 @@ _ca_circular_application_menu_class_init (CaCircularApplicationMenuClass* klass)
 
     g_object_class_install_property (
         gobject_class,
-        PROP_RENDER_REFLECTION,
+        PROP_RENDER_REFLECTION_OFF,
         g_param_spec_boolean (
-            "render-reflection",
-            "Render Reflection",
-            "Render Reflection.",
+            "render-reflection-off",
+            "Render Reflection off",
+            "Render Reflection off.",
             FALSE,
             G_PARAM_WRITABLE|G_PARAM_CONSTRUCT_ONLY));
 
