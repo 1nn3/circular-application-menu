@@ -207,7 +207,7 @@ struct _CaFileLeaf
 };
 
 /* Construction */
-GtkWidget* ca_circular_application_menu_new (GdkWindow *window, gboolean hide_preview, gboolean hide_tooltip, gboolean warp_mouse, gint glyph_size, gchar* emblem, gboolean render_reflection_off, gboolean render_tabbed_only, gchar* color);
+GtkWidget* ca_circular_application_menu_new (GdkWindow *window, gboolean hide_preview, gboolean hide_tooltip, gboolean warp_pointer_off, gint glyph_size, gchar* emblem, gboolean render_reflection_off, gboolean render_tabbed_only, gchar* color);
 GType ca_circular_application_menu_get_type(void);
 
 /* Implementation */
