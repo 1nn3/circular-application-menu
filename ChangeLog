@@ -1,3 +1,9 @@
+0.0.0r59
+	* Renamed option --render-reflection to --render-reflection-off.
+	  The Option --render-reflection-off stops the reflection from being rendered.
+	* Redefined the option -g, --glyph-size to use the value as pixel.
+	  Size of the glyphs must now given in pixel. 16 small, 32 medium (default) or 48 large and so on.
+
 0.0.0r58:
 	* The Circular-Main-Menu binary will now installed as cmm(1) instead of circular-main-menu(1).
 	* Added a key-file parser reads default values from $HOME/.cmm.
