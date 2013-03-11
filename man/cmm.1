@@ -15,9 +15,9 @@ Hides the tooltip displayed when the mouse is over a menuitem.
 .SS --warp-pointer-off
 Stops the pointer e.g. the mouse from warping to the centre of the screen whenever a menu is shown.
 .SS -g, --glyph-size=SIZE
-The size of the glyphs: 1=small, 2=medium or 3=large (default).
+The size of the glyphs in pixel: 16 small, 32 medium (default) or 48 large and so on.
 .BR
-Example: \-g="1", set the size of glyphs to small.
+Example: \-g 64, set the size of glyphs to XXL.
 .SS --blur-off
 Stops the blur from underneath the menu.
 .SS --no-fullscreen
@@ -38,18 +38,18 @@ The color can be either one of:
 .IP
 A standard name (Taken from the X11 rgb.txt file).
 .IP
-A hex value in the form '#rgb' '#rrggbb' '#rrrgggbbb' or '#rrrrggggbbbb'.
+A hex value in the form '#rgb', '#rrggbb', '#rrrgggbbb' or '#rrrrggggbbbb'.
 .IP
-A RGB color in the form 'rgb(r,g,b)'. (In this case the color will have full opacity. But opacity is ignored by C-A-M.)
+A RGB color in the form 'rgb(r,g,b)'. (In this case the color will have full opacity. But opacity is ignored.)
 .IP
-A RGBA color in the form 'rgba(r,g,b,a)'. (But opacity respectively alpha is ignored by C-A-M.)
+A RGBA color in the form 'rgba(r,g,b,a)'. (But opacity respectively alpha is ignored.)
 .RE
-Example: \-\-color="rgba(215,7,81)" stands for a Debian red singel color menu, \-\-color="#0f0:yellow" for "normal:prelight" and so on.
+Example: \-\-color="rgb(215,7,81)" stands for a DebianRed singel color menu, \-\-color="#0f0:yellow" for "normal:prelight" and so on.
 .BR
-Usually you can some predefined RGB colors in the X11 rgb.txt file \fI/etc/X11/rgb.txt\fR.
+Usually you can find some predefined RGB colors in the X11 rgb.txt file \fI/etc/X11/rgb.txt\fR.
 .SS --render-tabbed-only
 Only shows the currently tabbed menu.
-.SS --render-reflection
+.SS --render-reflection-off
 Stops the reflection from being rendered.
 .SS --menu-file=MENU_FILE
 Menu file.
@@ -63,10 +63,10 @@ Include NoDisplay=true menu entries.
 INI-file stored default values.
 .BR
 Example:
- # Settings for a Debian red singel color menu and excluded menu entries will displayed.
+ # Settings for a DebianRed singel color menu and excluded menu entries will displayed.
  [DEFAULT]
  	color = rgb(215,7,81)
- 	include-excluded = 1
+ 	include-excluded = true
 .SH HISTORY
 The Circular-Application-Menu was originally just a paper prototype written by Cole Anstey.
 
