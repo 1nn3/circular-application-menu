@@ -66,7 +66,7 @@ main (int argc, char **argv)
     /* Default values. */
     gboolean hide_preview = FALSE;
     gboolean warp_pointer_off = FALSE;
-    gint glyph_size = 3;
+    gint glyph_size = 32;
     gboolean blur_off = FALSE;
     gchar* emblem = NULL;
     gboolean render_reflection_off = FALSE;
@@ -110,7 +110,7 @@ main (int argc, char **argv)
         { "hide-preview", '\0', 0, G_OPTION_ARG_NONE, &hide_preview, "Hides the menu preview displayed when the mouse is over a menu.", NULL },
         { "hide-tooltip", '\0', 0, G_OPTION_ARG_NONE, &hide_tooltip, _("Hides the tooltip displayed when the mouse is over a menuitem."), NULL },
         { "warp-pointer-off", '\0', 0, G_OPTION_ARG_NONE, &warp_pointer_off, "Stops the pointer e.g. the mouse from warping to the centre of the screen whenever a menu is shown.", NULL },
-        { "glyph-size", 'g', 0, G_OPTION_ARG_INT, &glyph_size, "The size of the glyphs [SIZE: 1=small, 2=medium or 3=large (default)]. ", "SIZE"  },
+        { "glyph-size", 'g', 0, G_OPTION_ARG_INT, &glyph_size, "The size of the glyphs in pixel [SIZE: 16 small, 32 medium (default) or 48 large and so on].", "SIZE"  },
         { "blur-off", '\0', 0, G_OPTION_ARG_NONE, &blur_off, "Stops the blur from underneath the menu.", NULL },
         { "emblem", 'e', 0, G_OPTION_ARG_STRING, &emblem, "Specifies the (colon separated) emblems to use for the root menu.", "NORMAL:PRELIGHT" },
         { "render-reflection-off", '\0', 0, G_OPTION_ARG_NONE, &render_reflection_off, "Stops the reflection from being rendered.", NULL },

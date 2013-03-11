@@ -60,6 +60,7 @@ static void _ca_circular_applications_menu_get_segment_angles(CaFileItem* fileit
 static GdkPixbuf* _ca_circular_applications_menu_get_pixbuf_from_name(const char* name, gint width, gint height);
 static const gchar* _ca_circular_applications_menu_imagefinder_path(const gchar* path);
 static void _ca_circular_applications_menu_update_highlight(CaCircularApplicationMenu* circular_application_menu, gint x, gint y);
+static guint _ca_circular_applications_menu_update_glyph_size(CaCircularApplicationMenu* circular_application_menu, gint size);
 static gint _ca_circular_applications_menu_get_centre_iconsize(CaCircularApplicationMenu* circular_application_menu, CaFileLeaf* fileleaf);
 static void _ca_circular_applications_menu_update_emblem(CaCircularApplicationMenu* circular_application_menu, gchar* emblems);
 static void _ca_circular_application_menu_render_reflection(CaCircularApplicationMenu* circular_application_menu, cairo_t* cr);
@@ -209,7 +210,7 @@ static CaFileLeaf* g_disassociated_fileleaf = NULL;
  * @hide_preview: A boolean that specifies whether a submenu preview should be displayed.
  * @hide_tooltip: A boolean that specifies whether a tooltip should be displayed.
  * @warp_pointer_off: A boolean that specifies whether the mouse should not be 'warped' to the screen centre whenever a submenu is displayed.
- * @glyph_size: An integer that specifes the default glyph size.
+ * @glyph_size: An integer that specifes the default glyph size in pixel.
  * @emblem: A gchar pointer to the root menu emblem to use.
  * @render_reflection_off: A boolean that specifies whether the reflection should not be rendered.
  * @render_tabbed_only: A boolean that specifies whether rendering only occurrs for the currently tabbed menu.
@@ -378,6 +379,26 @@ _ca_circular_applications_menu_update_color(CaCircularApplicationMenu* circular_
     }
 }
 
+
+/**
+ * _ca_circular_applications_menu_update_glyph_size:
+ * @circular_application_menu: A CaCircularApplicationMenu pointer to the circular-application-menu widget instance.
+ * @size: a guint value that denotes the size in pixel.
+ *
+ * Updates the menu item glyph size.
+ *
+ * Returns: a guint with the glyph size.
+ **/
+static guint
+_ca_circular_applications_menu_update_glyph_size(CaCircularApplicationMenu* circular_application_menu, gint size)
+{
+    CaCircularApplicationMenuPrivate* private;
+    private = CA_CIRCULAR_APPLICATION_MENU_GET_PRIVATE(circular_application_menu);
+    private->glyph_size = (size > 0)? size : 32;
+
+    return private->glyph_size;
+}
+
 /**
  * _ca_circular_applications_menu_update_emblem:
  * @circular_application_menu: A CaCircularApplicationMenu pointer to the circular-application-menu widget instance.
@@ -534,8 +555,10 @@ _ca_circular_application_menu_constructor (
             }
             case PROP_GLYPH_SIZE:
             {
-                private->glyph_size = g_value_get_int (construct_params[param].value);
-
+                /* Update the menu item glyph size. */
+                _ca_circular_applications_menu_update_glyph_size (
+                    CA_CIRCULAR_APPLICATION_MENU (object),
+                    g_value_get_int (construct_params[param].value));
                 break;
             }
             case PROP_EMBLEM:
@@ -590,6 +613,7 @@ _ca_circular_application_menu_constructor (
         screen = gtk_widget_get_screen (GTK_WIDGET(object));
         settings = gtk_settings_get_for_screen (screen);
 
+        /*
         switch(private->glyph_size)
         {
             case 1:
@@ -602,8 +626,18 @@ _ca_circular_application_menu_constructor (
                 icon_size = GTK_ICON_SIZE_DND;
             break;
         }
+        */
 
-        if (!gtk_icon_size_lookup_for_settings (settings, icon_size, &private->icon_width, &private->icon_height))
+	icon_size = gtk_icon_size_register (
+		"GTK_ICON_SIZE_CUSTOM",
+		private->glyph_size,
+		private->glyph_size);
+
+        if (!gtk_icon_size_lookup_for_settings (
+		settings,
+		icon_size,
+		&private->icon_width,
+		&private->icon_height))
         {
             g_warning("Invalid icon size");
         }
@@ -777,8 +811,8 @@ _ca_circular_application_menu_class_init (CaCircularApplicationMenuClass* klass)
             "Glyph Size",
             "Glyph Size.",
             1, /* min */
-            3, /* max */
-            3, /* default/fallback */
+            G_MAXINT, /* max */
+            32, /* default/fallback */
             G_PARAM_WRITABLE|G_PARAM_CONSTRUCT_ONLY));
 
     g_object_class_install_property (
