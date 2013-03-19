@@ -103,6 +103,7 @@ main (int argc, char **argv)
         g_message ("Failed to load %s: %s", key_file_path, error->message);
         g_clear_error (&error); /* g_error_free */
     }
+    g_key_file_free(key_file);
 
     GOptionEntry options[] =
     {
