@@ -80,9 +80,8 @@ main (int argc, char **argv)
     gboolean no_fullscreen = FALSE;
     /* Key-value file parser — parses .ini-like config files */
     GKeyFile * key_file = g_key_file_new ();
-    gchar key_file_path[30] = "";
-    g_sprintf(&key_file_path, "%s/.cmm\0", getenv("HOME"));
-    if ( g_key_file_load_from_file (key_file, &key_file_path, G_KEY_FILE_NONE, &error))
+    gchar * key_file_path = g_build_filename (g_get_user_config_dir(), "cmm", NULL);
+    if ( g_key_file_load_from_file (key_file, key_file_path, G_KEY_FILE_NONE, &error))
     {
         color = g_key_file_get_string(key_file, "DEFAULT", "color", NULL);
         emblem = g_key_file_get_string(key_file, "DEFAULT", "emblem", NULL);
