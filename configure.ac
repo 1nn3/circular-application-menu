@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([Circular-Application-Menu], [0.0.0r59], [inne@sdfeu.org], [circular-application-menu], [http://github.com/1nn3/circular-application-menu])
+AC_INIT([Circular-Application-Menu], [0.0.0r60], [inne@sdfeu.org], [circular-application-menu], [http://github.com/1nn3/circular-application-menu])
 AC_CONFIG_SRCDIR([src/main.c])
 AC_CONFIG_HEADERS([config.h])
 
