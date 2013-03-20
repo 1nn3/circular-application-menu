@@ -1,4 +1,4 @@
-Fork of Circular-Application-Menu (C-A-M) by Steffen Rumberger
+Fork of Circular-Application-Menu by Steffen Rumberger
 
 A Circular-Application-Menu (C-A-M) mirroring the same structure as the existing application menu for the GNOME desktop.
 
@@ -31,9 +31,8 @@ To install Circular-Application-Menu in your home directory run:
 
 To build a package for Debian GNU/Linux run instead:
 
-	apt-get install build-essential debhelper autotools-dev autoconf automake libgtk-3-dev libgnomevfs2-dev libgnome-menu-3-dev
-	./autogen.sh # create configure script
-	dpkg-buildpackage -b -uc
+	apt-get install build-essential debhelper dh-autoreconf libgtk-3-dev libgnomevfs2-dev libgnome-menu-3-dev
+	debuild -i -us -uc -b # build the Debian package
 
 LICENSE AND COPYRIGHT
 
@@ -50,5 +49,5 @@ Contact me by email: Steffen Rumberger <inne@sdfeu.org>
 
 THANKS
 
-My thanks go to Cole Anstey, the project founder and author of Circular-Application-Menu and all people who have contributed. See AUTHORS for more information.
+My thanks go to the project founder and author of Circular-Application-Menu Cole Anstey and all people who have contributed. See AUTHORS for more information.
 
