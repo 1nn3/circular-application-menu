@@ -1,3 +1,7 @@
+0.0.0r60
+	* Moved the configuration in the base directory which stored user-specific configuration information.
+	  Path of the configuration is now XDG_CONFIG_HOME/cmm (Default: $HOME/.config/cmm).
+
 0.0.0r59
 	* Renamed option --render-reflection to --render-reflection-off.
 	  The Option --render-reflection-off stops the reflection from being rendered.
