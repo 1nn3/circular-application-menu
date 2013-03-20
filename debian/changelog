@@ -1,6 +1,5 @@
-circular-application-menu (0.0.0r59-1) UNRELEASED; urgency=low
+circular-application-menu (0.0.0r60-1) unstable; urgency=low
 
-  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
-  * I don't write a separate changelog of the debian packaging.
+  * Initial release
 
- -- Steffen Rumberger <inne@sdfeu.org>  Sat, 02 Mar 2013 17:07:52 +0100
+ -- Steffen Rumberger <inne@sdfeu.org>  Sat, 23 Mar 2013 00:00:00 +0100
