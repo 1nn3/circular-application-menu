@@ -3990,7 +3990,7 @@ _ca_circular_applications_menu_get_pixbuf_from_name(const char* name, gint width
         /* No icon was found so use a default. */
         icon = gtk_icon_theme_load_icon (
             gtk_icon_theme_get_default (),
-            GTK_STOCK_FILE,
+            "text-x-generic",
             width,
             GTK_ICON_LOOKUP_NO_SVG,
             NULL);
